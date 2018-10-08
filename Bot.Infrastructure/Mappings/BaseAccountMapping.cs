@@ -1,18 +1,19 @@
 ﻿using Bot.Domain.Entities;
+using Bot.Domain.Entities.Base;
 using Bot.Infrastructure.Mappings.Bases;
 using Bot.Infrastructure.Mappings.Helpers;
-using NHibernate.Mapping;
+using NHibernate;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Impl;
 
 namespace Bot.Infrastructure.Mappings
 {
-    public class PlayerMapping : BaseMapping<Player>
+    public class BaseAccountMapping : BaseMapping<BaseAccount>
     {
-        public PlayerMapping()
+        public BaseAccountMapping()
         {
-            Table("`Player`");
-            this.Property(x => x.ParticipationRatio);
-            this.Property(x => x.SkillValue);
+            Table("`Account`");
+            
             ManyToOne(x => x.User, c =>
             {
                 c.Cascade(Cascade.None);

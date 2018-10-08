@@ -115,6 +115,11 @@
     <Compile Include="BotService.Designer.cs">
       <DependentUpon>BotService.cs</DependentUpon>
     </Compile>
+    <Compile Include="Handlers\DummyHandlers\DummyMediatrHandler.cs" />
+    <Compile Include="Handlers\AuthorizationBehavior.cs" />
+    <Compile Include="Handlers\LogExceptionBehavior.cs" />
+    <Compile Include="Handlers\RegisterRequestHandler.cs" />
+    <Compile Include="Model\ActionContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -124,11 +129,15 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\SessionProvider.cs" />
+    <Compile Include="Requests\RegisterRequest.cs" />
     <Compile Include="Services\AppNinjectModule.cs" />
     <Compile Include="Services\IBotCommandsProcessor.cs" />
     <Compile Include="Services\BotServiceSessionFactory.cs" />
+    <Compile Include="Services\Interfaces\IAuthorizationManager.cs" />
     <Compile Include="Services\Interfaces\IServiceConfiguration.cs" />
+    <Compile Include="Services\Interfaces\ITelegramAuthorizationManager.cs" />
     <Compile Include="Services\ServiceConfiguration.cs" />
+    <Compile Include="Services\TelegramAuthorizationManager.cs" />
     <Compile Include="Services\TelegramInteractionService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +159,9 @@
       <Project>{fd7a3e49-a16b-4bf4-9598-8565a36b7e97}</Project>
       <Name>BotService.Domain</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Specifications" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

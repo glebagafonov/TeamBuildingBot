@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bot.Domain.Entities;
+using Bot.Domain.Entities.Base;
+using Bot.Domain.Enums;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services;
 using Bot.Infrastructure.Services.Interfaces;
@@ -32,7 +34,15 @@ namespace BotService
                                               Id         = Guid.NewGuid(),
                                               FirstName  = "Gleb",
                                               LastName   = "Agafonov",
-                                              TelegramId = 317127863
+                                              UserAccounts = new List<BaseAccount>()
+                                                             {
+                                                                 new TelegramAccount()
+                                                                 {
+                                                                     Id = Guid.NewGuid(),
+                                                                     TelegramId = 317127863
+                                                                 }
+                                                             },
+                                              Role = EUserRole.Administrator
                                           }
                                       };
 
@@ -54,6 +64,15 @@ namespace BotService
         protected override void OnStart(string[] args)
         {
             ServiceLocator.Get<TelegramInteractionService>();
+
+            (_users.First().UserAccounts.First() as TelegramAccount).User = _users.First();
+            var threadContextSessionProvider = ServiceLocator.Get<IThreadContextSessionProvider>();
+            var botUserRepository = ServiceLocator.Get<IBotUserRepository>();
+//            using (threadContextSessionProvider.CreateSessionScope())
+//            {
+//                botUserRepository.Save(_users.First());
+//                var users = botUserRepository.ListBySpecification(new UndeletedEntities<BotUser>());
+//            }
         }
 
         private static void CreateKernel()

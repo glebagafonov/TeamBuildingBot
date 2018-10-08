@@ -5,15 +5,21 @@ using NHibernate.Mapping.ByCode;
 
 namespace Bot.Infrastructure.Mappings
 {
-    public class UserMapping : BaseMapping<BotUser>
+    public class BotUserMapping : BaseMapping<BotUser>
     {
-        public UserMapping()
+        public BotUserMapping()
         {
             Table("`User`");
             this.PropertyString(x => x.FirstName);
             this.PropertyString(x => x.LastName);
             this.PropertyEnum(x => x.Role);
-            this.Property(x => x.TelegramId);
+            
+            Set(x => x.UserAccounts, c =>
+            {
+                c.Cascade(Cascade.All);
+                c.Key(k => k.Column("UserId"));
+                c.Table("User_Account");
+            }, r => r.ManyToMany(m => m.Column("AccountId")));
         }
     }
 }

@@ -1,8 +1,10 @@
 namespace Bot.Domain.Enums
 {
-    public enum EBotUserRole
+    public enum EUserRole
     {
-        Administrator,
-        User
+        User = 0,
+        Player,
+        Moderator,
+        Administrator
     }
 }

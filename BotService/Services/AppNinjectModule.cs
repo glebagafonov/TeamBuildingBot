@@ -4,7 +4,10 @@ using Bot.Infrastructure.Repositories.Base;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services;
 using Bot.Infrastructure.Services.Interfaces;
+using BotService.Handlers;
+using BotService.Handlers.DummyHandlers;
 using BotService.Providers;
+using BotService.Requests;
 using BotService.Services.Interfaces;
 using MediatR;
 using NHibernate;
@@ -82,8 +85,30 @@ namespace BotService.Services
             Bind<IMediator>()
                 .To<Mediator>()
                 .InSingletonScope();
+            
+            Bind(typeof(IPipelineBehavior<,>))
+                .To(typeof(LogExceptionBehavior<,>));
+            
+            Bind(typeof(IPipelineBehavior<,>))
+                .To(typeof(AuthorizationBehavior<,>));
+
+            BindRequests();
+            
+            Bind(typeof(IRequestHandler<>))
+                .To<DummyMediatrHandler>()
+                .InSingletonScope();
+
+            Bind<ServiceFactory>()
+                .ToMethod(ctx => t => ctx.Kernel.TryGet(t));
+            
         }
-        
+
+        private void BindRequests()
+        { 
+            Bind<IRequestHandler<RegisterRequest>>()
+            .To<RegisterRequestHandler>();
+        }
+
         private void BindServices()
         {
             Bind<TelegramInteractionService>()
