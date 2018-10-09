@@ -181,6 +181,9 @@
   <ItemGroup>
     <Folder Include="Specifications" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.config.sample" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

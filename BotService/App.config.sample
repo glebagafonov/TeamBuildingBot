@@ -10,7 +10,7 @@
         <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1" />
     </startup>
     <appSettings>
-        <add key="telegramToken" value="617719186:AAGfbpBXi_xTUGxEYPwlu-6zj3CTcl73YeU" />
+        <add key="telegramToken" value="-Your token-" />
     </appSettings>
     <system.data>
         <DbProviderFactories>
