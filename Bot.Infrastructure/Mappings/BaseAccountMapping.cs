@@ -18,6 +18,12 @@ namespace Bot.Infrastructure.Mappings
             {
                 c.Cascade(Cascade.None);
             });
+            
+//            Discriminator(dm =>
+//            {
+//                dm.NotNullable(true);
+//                dm.Column("Discriminator");
+//            });
         }
     }
 }

@@ -16,6 +16,7 @@ using Bot.Infrastructure.Services;
 using Bot.Infrastructure.Services.Interfaces;
 using Bot.Infrastructure.Specifications;
 using BotService.Services;
+using BotService.Services.TelegramServices;
 using Ninject;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -36,6 +37,11 @@ namespace BotService
                                               LastName   = "Agafonov",
                                               UserAccounts = new List<BaseAccount>()
                                                              {
+                                                                 new VkAccount()
+                                                                 {
+                                                                     Id = Guid.NewGuid(), VkId = 123
+                                                                 },
+                                                                 
                                                                  new TelegramAccount()
                                                                  {
                                                                      Id = Guid.NewGuid(),
@@ -65,24 +71,25 @@ namespace BotService
         {
             ServiceLocator.Get<TelegramInteractionService>();
 
-            (_users.First().UserAccounts.First() as TelegramAccount).User = _users.First();
-            var threadContextSessionProvider = ServiceLocator.Get<IThreadContextSessionProvider>();
-            var botUserRepository = ServiceLocator.Get<IBotUserRepository>();
+           // (_users.First().UserAccounts.First() as VkAccount).User = _users.First();
+            //(_users.First().UserAccounts.Skip(1).First() as TelegramAccount).User = _users.First();
+            //var threadContextSessionProvider = ServiceLocator.Get<IThreadContextSessionProvider>();
+            //var botUserRepository = ServiceLocator.Get<IBotUserRepository>();
 //            using (threadContextSessionProvider.CreateSessionScope())
 //            {
-//                botUserRepository.Save(_users.First());
-//                var users = botUserRepository.ListBySpecification(new UndeletedEntities<BotUser>());
+//                //botUserRepository.Save(_users.First());
+//                //var users = botUserRepository.ListBySpecification(new UndeletedEntities<BotUser>());
 //            }
         }
 
         private static void CreateKernel()
         {
-            var kernel = new KernelConfiguration();
+            var kernel = new StandardKernel();
             try
             {
 
                 RegisterServices(kernel);
-                ServiceLocator.SetRoot(kernel.BuildReadonlyKernel());
+                ServiceLocator.SetRoot(kernel);
             }
             catch
             {
@@ -91,7 +98,7 @@ namespace BotService
             }
         }
 
-        private static void RegisterServices(IKernelConfiguration kernel)
+        private static void RegisterServices(StandardKernel kernel)
         {
             kernel.Load(new AppNinjectModule());
         }

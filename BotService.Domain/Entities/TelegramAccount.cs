@@ -4,6 +4,6 @@ namespace Bot.Domain.Entities
 {
     public class TelegramAccount : BaseAccount
     {
-        public virtual int TelegramId { get; set; }
+        public virtual long TelegramId { get; set; }
     }
 }

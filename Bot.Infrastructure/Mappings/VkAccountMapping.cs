@@ -6,12 +6,12 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace Bot.Infrastructure.Mappings
 {
-    public class TelegramAccountMapping : UnionSubclassMapping<TelegramAccount>
+    public class VkAccountMapping : UnionSubclassMapping<VkAccount>
     {
-        public TelegramAccountMapping()
+        public VkAccountMapping()
         {
             //Key(km => km.Column("Id"));
-            this.Property(x => x.TelegramId);
+            this.Property(x => x.VkId);
         }
     }
 }

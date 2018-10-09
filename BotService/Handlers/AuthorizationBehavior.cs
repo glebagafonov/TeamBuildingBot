@@ -24,13 +24,13 @@ namespace BotService.Handlers
         public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
             RequestHandlerDelegate<TResponse> next)
         {
-                if (request.GetType().GetCustomAttributes<UserAccessAttribute>().First().UserRole > EUserRole.User &&
-                    ActionContext.User != null &&
-                    ActionContext.User.Role <
-                    request.GetType().GetCustomAttributes<UserAccessAttribute>().First().UserRole)
-                    throw new UnauthorizedException("User does not have permissions for this command");
+            if (request.GetType().GetCustomAttributes().Any(x => x is UserAccessAttribute) && request.GetType().GetCustomAttributes<UserAccessAttribute>().First().UserRole > EUserRole.User &&
+                (ActionContext.User == null ||
+                ActionContext.User.Role <
+                request.GetType().GetCustomAttributes<UserAccessAttribute>().First().UserRole))
+                throw new UnauthorizedException("User does not have permissions for this command");
 
-                return next();
+            return next();
         }
     }
 }
