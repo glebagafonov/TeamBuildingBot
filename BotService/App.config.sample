@@ -10,7 +10,7 @@
         <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1" />
     </startup>
     <appSettings>
-        <add key="telegramToken" value="617719186:AAGfbpBXi_xTUGxEYPwlu-6zj3CTcl73YeU" />
+        <add key="telegramToken" value="-Your token-" />
     </appSettings>
     <system.data>
         <DbProviderFactories>
@@ -18,9 +18,9 @@
     </system.data>
     <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" throwExceptions="true">
         <targets>
-            <default-wrapper xsi:type="AsyncWrapper">
-                <wrapper-target xsi:type="BufferingWrapper" bufferSize="5" />
-            </default-wrapper>
+            <!-- <default-wrapper xsi:type="AsyncWrapper"> -->
+            <!--     <wrapper-target xsi:type="BufferingWrapper" bufferSize="1" /> -->
+            <!-- </default-wrapper> -->
             <target xsi:type="ColoredConsole" name="consoleLog" layout="${time} ${message} ${exception:innerFormat=Message,Type,Method,StackTrace:maxInnerExceptionLevel=10:innerExceptionSeparator=/:separator=,:format=Message,Type,Method,StackTrace}" useDefaultRowHighlightingRules="true">
             </target>
             <target xsi:type="File" name="fileLog" fileName="${appsetting:name=systemLogFolder:default=logs}/${shortdate}-${processname}.log">

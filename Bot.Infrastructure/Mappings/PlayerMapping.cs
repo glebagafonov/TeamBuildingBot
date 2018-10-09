@@ -1,6 +1,7 @@
 ﻿using Bot.Domain.Entities;
 using Bot.Infrastructure.Mappings.Bases;
 using Bot.Infrastructure.Mappings.Helpers;
+using NHibernate.Mapping;
 using NHibernate.Mapping.ByCode;
 
 namespace Bot.Infrastructure.Mappings
