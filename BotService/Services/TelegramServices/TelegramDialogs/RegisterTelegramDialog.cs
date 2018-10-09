@@ -1,17 +1,17 @@
-using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Services.Interfaces;
 using BotService.Requests;
+using BotService.Services.TelegramServices.TelegramDialogs.Base;
 using MediatR;
 
-namespace BotService.Services.TelegramServices
+namespace BotService.Services.TelegramServices.TelegramDialogs
 {
     public class RegisterTelegramDialog : BaseTelegramDialog
     {
         private readonly long _chatId;
-        private readonly long _telegramId;
         private readonly IMediator _mediator;
+        private readonly long _telegramId;
         private readonly TelegramInteractionService _telegramInteractionService;
-        private RegisterRequestByTelegramAccount _request;
+        private readonly RegisterRequestByTelegramAccount _request;
 
         public RegisterTelegramDialog(long chatId, long telegramId, IMediator mediator,
             TelegramInteractionService telegramInteractionService, ILogger logger) : base(chatId,
@@ -24,27 +24,12 @@ namespace BotService.Services.TelegramServices
             _request                    = new RegisterRequestByTelegramAccount();
         }
 
+        protected override string CommandName => "Регистрация";
+
         protected override async void Init()
         {
-            Add("Введите имя:", x =>
-            {
-                if (string.IsNullOrEmpty(x))
-                {
-                    throw new InvalidInputException("Введена пустая строка. Попробуй еще раз");
-                }
-
-                _request.FirstName = x;
-            });
-            Add("Введите фамилию:", x =>
-                {
-                    if (string.IsNullOrEmpty(x))
-                    {
-                        throw new InvalidInputException("Введена пустая строка. Попробуй еще раз");
-                    }
-
-                    _request.LastName = x;
-                }
-            );
+            Add("Введите имя:", x => { _request.FirstName    = x; });
+            Add("Введите фамилию:", x => { _request.LastName = x; });
         }
 
         protected override async void ProcessResult()
@@ -56,7 +41,9 @@ namespace BotService.Services.TelegramServices
             RaiseCompleteEvent();
         }
 
-        protected override string CommandName => "Регистрация";
-        protected override string InitMessage => "Введите имя:";
+        protected override async void InitAction()
+        {
+            await _telegramInteractionService.SendMessage(_chatId, "Введите имя");
+        }
     }
 }

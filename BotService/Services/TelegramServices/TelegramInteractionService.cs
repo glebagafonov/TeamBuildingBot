@@ -6,6 +6,7 @@ using Bot.Infrastructure.Services.Interfaces;
 using BotService.Requests;
 using BotService.Services.Interfaces;
 using BotService.Services.TelegramServices.Interfaces;
+using BotService.Services.TelegramServices.TelegramDialogs;
 using MediatR;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -23,6 +24,7 @@ namespace BotService.Services.TelegramServices
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
         private readonly ITelegramAuthorizationManager _telegramAuthorizationManager;
         private readonly ILogger _logger;
+        private readonly IPlayerRepository _playerRepository;
         private readonly ITelegramBotClient _client;
         private ITelegramDialog _currentDialog;
 
@@ -31,7 +33,8 @@ namespace BotService.Services.TelegramServices
             IBotUserRepository botUserRepository,
             IThreadContextSessionProvider threadContextSessionProvider,
             ITelegramAuthorizationManager telegramAuthorizationManager,
-            ILogger logger)
+            ILogger logger,
+            IPlayerRepository playerRepository)
         {
             _serviceConfiguration         = serviceConfiguration;
             _mediator                     = mediator;
@@ -39,6 +42,7 @@ namespace BotService.Services.TelegramServices
             _threadContextSessionProvider = threadContextSessionProvider;
             _telegramAuthorizationManager = telegramAuthorizationManager;
             _logger                       = logger;
+            _playerRepository = playerRepository;
             _client                       = new TelegramBotClient(_serviceConfiguration.TelegramToken);
             _client.SetWebhookAsync("");
 
@@ -71,7 +75,13 @@ namespace BotService.Services.TelegramServices
                         if (message.Text.Contains("/register"))
                         {
                             _currentDialog = new RegisterTelegramDialog(message.Chat.Id, message.From.Id, _mediator,
-                                this, _logger);
+                                this, _logger).Create();
+                            _currentDialog.CompleteEvent += CompleteEventHandler;
+                        }
+                        else if (message.Text.Contains("/bindplayer"))
+                        {
+                            _currentDialog = new BindUserToPlayerDialog(message.Chat.Id, message.From.Id, _mediator,
+                                this, _logger, _botUserRepository, _threadContextSessionProvider, _playerRepository).Create();
                             _currentDialog.CompleteEvent += CompleteEventHandler;
                         }
                         else
@@ -100,6 +110,7 @@ namespace BotService.Services.TelegramServices
 
         private void CompleteEventHandler()
         {
+            _currentDialog.CompleteEvent -= CompleteEventHandler;
             _currentDialog = null;
         }
 

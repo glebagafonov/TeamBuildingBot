@@ -9,5 +9,6 @@ namespace BotService.Services.TelegramServices.Interfaces
     {
         void ProcessMessage(string message, int messageId, long chatId);
         event CompleteEventHandler CompleteEvent;
+        ITelegramDialog Create();
     }
 }

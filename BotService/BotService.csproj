@@ -60,6 +60,7 @@
       <HintPath>..\packages\MediatR.5.1.0\lib\net45\MediatR.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -108,6 +109,10 @@
     <Reference Include="System.Management" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -130,6 +135,7 @@
     <Compile Include="Handlers\DummyHandlers\DummyMediatrHandler.cs" />
     <Compile Include="Handlers\AuthorizationBehavior.cs" />
     <Compile Include="Handlers\LogExceptionBehavior.cs" />
+    <Compile Include="Handlers\BindUserToPlayerRequestHandler.cs" />
     <Compile Include="Handlers\RegisterRequestByTelegramAccountHandler.cs" />
     <Compile Include="Model\ActionContext.cs" />
     <Compile Include="Ninject\ContravariantBindingResolver.cs" />
@@ -143,6 +149,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\SessionProvider.cs" />
     <Compile Include="Requests\BindRequest.cs" />
+    <Compile Include="Requests\BindUserToPlayerRequest.cs" />
     <Compile Include="Requests\RegisterRequestByTelegramAccount.cs" />
     <Compile Include="Services\AppNinjectModule.cs" />
     <Compile Include="Services\IBotCommandsProcessor.cs" />
@@ -151,11 +158,12 @@
     <Compile Include="Services\Interfaces\IServiceConfiguration.cs" />
     <Compile Include="Services\Interfaces\ITelegramAuthorizationManager.cs" />
     <Compile Include="Services\ServiceConfiguration.cs" />
-    <Compile Include="Services\TelegramServices\BaseTelegramDialog.cs" />
     <Compile Include="Services\TelegramServices\Interfaces\ITelegramDialog.cs" />
-    <Compile Include="Services\TelegramServices\RegisterTelegramDialog.cs" />
     <Compile Include="Services\TelegramServices\TelegramAuthorizationManager.cs" />
     <Compile Include="Services\TelegramServices\TelegramCommandFactory.cs" />
+    <Compile Include="Services\TelegramServices\TelegramDialogs\Base\BaseTelegramDialog.cs" />
+    <Compile Include="Services\TelegramServices\TelegramDialogs\BindUserToPlayerDialog.cs" />
+    <Compile Include="Services\TelegramServices\TelegramDialogs\RegisterTelegramDialog.cs" />
     <Compile Include="Services\TelegramServices\TelegramInteractionService.cs" />
   </ItemGroup>
   <ItemGroup>

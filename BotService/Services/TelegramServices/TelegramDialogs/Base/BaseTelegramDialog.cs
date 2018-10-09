@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bot.Infrastructure.Services.Interfaces;
 using BotService.Services.TelegramServices.Interfaces;
-using Telegram.Bot;
 
-namespace BotService.Services.TelegramServices
+namespace BotService.Services.TelegramServices.TelegramDialogs.Base
 {
     public abstract class BaseTelegramDialog : ITelegramDialog
     {
+        private readonly long _chatId;
         private readonly TelegramInteractionService _telegramInteractionService;
         private readonly ILogger _logger;
         private readonly List<DialogAction> _dialogActions;
@@ -19,16 +19,23 @@ namespace BotService.Services.TelegramServices
             TelegramInteractionService telegramInteractionService,
             ILogger logger)
         {
+            _chatId = chatId;
             _telegramInteractionService = telegramInteractionService;
             _logger                     = logger;
 
             _dialogActions = new List<DialogAction>();
             _dialogState   = 0;
 
-            Init();
-            _telegramInteractionService.SendMessage(chatId, CommandName).Wait();
-            _telegramInteractionService.SendMessage(chatId, InitMessage).Wait();
         }
+
+        public ITelegramDialog Create()
+        {
+            Init();
+            _telegramInteractionService.SendMessage(_chatId, CommandName).Wait();
+            InitAction();
+            return this;
+        }
+           
 
         public async void ProcessMessage(string message, int messageId, long chatId)
         {
@@ -44,6 +51,7 @@ namespace BotService.Services.TelegramServices
                 await _telegramInteractionService.SendMessage(chatId, e.Message, messageId);
                 if (action != null)
                     await _telegramInteractionService.SendMessage(chatId, action.Message, messageId);
+                return;
             }
 
             _dialogState++;
@@ -70,7 +78,7 @@ namespace BotService.Services.TelegramServices
         protected abstract void Init();
         protected abstract void ProcessResult();
         protected abstract string CommandName { get; }
-        protected abstract string InitMessage { get; }
+        protected abstract void InitAction();
         
         protected virtual void RaiseSampleEvent()
         {
