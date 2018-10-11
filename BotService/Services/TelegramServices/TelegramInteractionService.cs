@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services.Interfaces;
+using BotService.Model.Dialog.Interfaces;
 using BotService.Requests;
 using BotService.Services.Interfaces;
-using BotService.Services.TelegramServices.Interfaces;
 using BotService.Services.TelegramServices.TelegramDialogs;
 using MediatR;
 using Telegram.Bot;
@@ -22,17 +22,15 @@ namespace BotService.Services.TelegramServices
         private readonly IMediator _mediator;
         private readonly IBotUserRepository _botUserRepository;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
-        private readonly ITelegramAuthorizationManager _telegramAuthorizationManager;
         private readonly ILogger _logger;
         private readonly IPlayerRepository _playerRepository;
         private readonly ITelegramBotClient _client;
-        private ITelegramDialog _currentDialog;
+        private IDialog _currentDialog;
 
         public TelegramInteractionService(IServiceConfiguration serviceConfiguration,
             IMediator mediator,
             IBotUserRepository botUserRepository,
             IThreadContextSessionProvider threadContextSessionProvider,
-            ITelegramAuthorizationManager telegramAuthorizationManager,
             ILogger logger,
             IPlayerRepository playerRepository)
         {
@@ -40,7 +38,6 @@ namespace BotService.Services.TelegramServices
             _mediator                     = mediator;
             _botUserRepository            = botUserRepository;
             _threadContextSessionProvider = threadContextSessionProvider;
-            _telegramAuthorizationManager = telegramAuthorizationManager;
             _logger                       = logger;
             _playerRepository = playerRepository;
             _client                       = new TelegramBotClient(_serviceConfiguration.TelegramToken);
@@ -54,7 +51,6 @@ namespace BotService.Services.TelegramServices
         private async void Bot_OnMessage(object sender, MessageEventArgs messageEventArgs)
         {
             var message = messageEventArgs.Message;
-            _telegramAuthorizationManager.Authorize(message.From.Id);
             try
             {
                 if (message.Type == MessageType.Text)
@@ -67,22 +63,26 @@ namespace BotService.Services.TelegramServices
                             await SendMessage(new ChatId(message.Chat.Id),
                                 "Введи команду. (список команд можно получить использовав команду - /help)");
                         }
+                        else
+                        {
+                            
+                            //_currentDialog.ProcessMessage(message.Text, message.MessageId, message.Chat.Id);
+                        }
 
-                        _currentDialog.ProcessMessage(message.Text, message.MessageId, message.Chat.Id);
                     }
                     else
                     {
                         if (message.Text.Contains("/register"))
                         {
-                            _currentDialog = new RegisterTelegramDialog(message.Chat.Id, message.From.Id, _mediator,
-                                this, _logger).Create();
-                            _currentDialog.CompleteEvent += CompleteEventHandler;
+//                            _currentDialog = new RegisterTelegramDialog(message.Chat.Id, message.From.Id, _mediator,
+//                                this, _logger).Create();
+//                            _currentDialog.CompleteEvent += CompleteEventHandler;
                         }
                         else if (message.Text.Contains("/bindplayer"))
                         {
-                            _currentDialog = new BindUserToPlayerDialog(message.Chat.Id, message.From.Id, _mediator,
+                            /*_currentDialog = new BindUserToPlayerDialog(message.Chat.Id, message.From.Id, _mediator,
                                 this, _logger, _botUserRepository, _threadContextSessionProvider, _playerRepository).Create();
-                            _currentDialog.CompleteEvent += CompleteEventHandler;
+                            _currentDialog.CompleteEvent += CompleteEventHandler;*/
                         }
                         else
                         {

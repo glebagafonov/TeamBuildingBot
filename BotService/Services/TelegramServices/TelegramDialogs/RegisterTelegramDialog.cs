@@ -1,49 +1,49 @@
+using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Services.Interfaces;
+using BotService.Model.Dialog;
+using BotService.Model.Dialog.Interfaces;
 using BotService.Requests;
-using BotService.Services.TelegramServices.TelegramDialogs.Base;
 using MediatR;
 
 namespace BotService.Services.TelegramServices.TelegramDialogs
 {
-    public class RegisterTelegramDialog : BaseTelegramDialog
+    public class RegisterTelegramDialog : Dialog<RegisterRequest>
     {
-        private readonly long _chatId;
         private readonly IMediator _mediator;
-        private readonly long _telegramId;
-        private readonly TelegramInteractionService _telegramInteractionService;
-        private readonly RegisterRequestByTelegramAccount _request;
 
-        public RegisterTelegramDialog(long chatId, long telegramId, IMediator mediator,
-            TelegramInteractionService telegramInteractionService, ILogger logger) : base(chatId,
-            telegramInteractionService, logger)
+        public RegisterTelegramDialog(ILogger logger, IMediator mediator) : base(logger)
         {
-            _chatId                     = chatId;
-            _telegramId                 = telegramId;
-            _mediator                   = mediator;
-            _telegramInteractionService = telegramInteractionService;
-            _request                    = new RegisterRequestByTelegramAccount();
+            _mediator = mediator;
+            Add("Введи имя");
+            Add((message, registerRequestByTelegramAccount) =>
+            {
+                registerRequestByTelegramAccount.FirstName = message;
+                return registerRequestByTelegramAccount;
+            });
+            Add("Введи фамилию");
+            Add((message, registerRequestByTelegramAccount) =>
+            {
+                registerRequestByTelegramAccount.LastName = message;
+                return registerRequestByTelegramAccount;
+            });
+//            Add("Введи уникальный пароль");
+//            Add((message, registerRequestByTelegramAccount) =>
+//            {
+//                var task = _mediator.Send(new CheckUniquePassword(message));
+//                task.Wait();
+//                if(@task.Result)
+//                    throw new InvalidInputException("Такой пароль уже существует! Придумай свой уникальный пароль.");
+//                registerRequestByTelegramAccount.Password = message;
+//                return registerRequestByTelegramAccount;
+//            });
+            Add("Регистрация завершена");
         }
-
+        
         protected override string CommandName => "Регистрация";
-
-        protected override async void Init()
+        public override void ProcessDialogEnded()
         {
-            Add("Введите имя:", x => { _request.FirstName    = x; });
-            Add("Введите фамилию:", x => { _request.LastName = x; });
-        }
+            _mediator.Send(DialogData);
 
-        protected override async void ProcessResult()
-        {
-            _request.TelegramId = _telegramId;
-            await _mediator.Send(_request);
-            await _telegramInteractionService.SendMessage(_chatId, "Успешная регистрация");
-
-            RaiseCompleteEvent();
-        }
-
-        protected override async void InitAction()
-        {
-            await _telegramInteractionService.SendMessage(_chatId, "Введите имя");
         }
     }
 }

@@ -40,6 +40,10 @@
       <HintPath>..\packages\Antlr3.Runtime.3.5.1\lib\net40-client\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="BCrypt.Net-Next, Version=3.1.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\BCrypt.Net-Next.3.1.0\lib\net452\BCrypt.Net-Next.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc">
       <HintPath>..\packages\Castle.Core.4.2.0\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
@@ -136,8 +140,16 @@
     <Compile Include="Handlers\AuthorizationBehavior.cs" />
     <Compile Include="Handlers\LogExceptionBehavior.cs" />
     <Compile Include="Handlers\BindUserToPlayerRequestHandler.cs" />
-    <Compile Include="Handlers\RegisterRequestByTelegramAccountHandler.cs" />
+    <Compile Include="Handlers\CheckUniquePasswordHandler.cs" />
+    <Compile Include="Handlers\RegisterRequestHandler.cs" />
     <Compile Include="Model\ActionContext.cs" />
+    <Compile Include="Model\Dialog\Dialog.cs" />
+    <Compile Include="Model\Dialog\DialogSendMessageAction.cs" />
+    <Compile Include="Model\Dialog\DialogUserAction.cs" />
+    <Compile Include="Model\Dialog\Interfaces\IDialog.cs" />
+    <Compile Include="Model\Dialog\Interfaces\IDialogAction.cs" />
+    <Compile Include="Model\Dialog\Interfaces\IDialogSendMessageAction.cs" />
+    <Compile Include="Model\Dialog\Interfaces\IDialogUserAction.cs" />
     <Compile Include="Ninject\ContravariantBindingResolver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
@@ -150,21 +162,21 @@
     <Compile Include="Providers\SessionProvider.cs" />
     <Compile Include="Requests\BindRequest.cs" />
     <Compile Include="Requests\BindUserToPlayerRequest.cs" />
-    <Compile Include="Requests\RegisterRequestByTelegramAccount.cs" />
+    <Compile Include="Requests\CheckUniquePassword.cs" />
+    <Compile Include="Requests\RegisterRequest.cs" />
     <Compile Include="Services\AppNinjectModule.cs" />
     <Compile Include="Services\IBotCommandsProcessor.cs" />
     <Compile Include="Services\BotServiceSessionFactory.cs" />
-    <Compile Include="Services\Interfaces\IAuthorizationManager.cs" />
+    <Compile Include="Services\Interfaces\ICommunicator.cs" />
     <Compile Include="Services\Interfaces\IServiceConfiguration.cs" />
-    <Compile Include="Services\Interfaces\ITelegramAuthorizationManager.cs" />
+    <Compile Include="Services\Interfaces\IUsersInteractionService.cs" />
     <Compile Include="Services\ServiceConfiguration.cs" />
-    <Compile Include="Services\TelegramServices\Interfaces\ITelegramDialog.cs" />
-    <Compile Include="Services\TelegramServices\TelegramAuthorizationManager.cs" />
     <Compile Include="Services\TelegramServices\TelegramCommandFactory.cs" />
-    <Compile Include="Services\TelegramServices\TelegramDialogs\Base\BaseTelegramDialog.cs" />
+    <Compile Include="Services\TelegramServices\TelegramCommunicator.cs" />
     <Compile Include="Services\TelegramServices\TelegramDialogs\BindUserToPlayerDialog.cs" />
     <Compile Include="Services\TelegramServices\TelegramDialogs\RegisterTelegramDialog.cs" />
     <Compile Include="Services\TelegramServices\TelegramInteractionService.cs" />
+    <Compile Include="Services\UsersInteractionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -187,6 +199,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Services\TelegramServices\Interfaces" />
     <Folder Include="Specifications" />
   </ItemGroup>
   <ItemGroup>

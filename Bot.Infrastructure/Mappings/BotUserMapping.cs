@@ -20,6 +20,9 @@ namespace Bot.Infrastructure.Mappings
                 c.Key(k => k.Column("UserId"));
                 c.Table("User_Account");
             }, r => r.ManyToMany(m => m.Column("AccountId")));
+            
+            
+            //this.PropertyString(x => x.PasswordHash);
         }
     }
 }

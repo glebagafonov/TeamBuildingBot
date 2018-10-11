@@ -17,7 +17,7 @@ namespace BotService.Services.TelegramServices
 
         public void Initialize()
         {
-            Add<RegisterRequestByTelegramAccount>("/register");
+            Add<RegisterRequest>("/register");
         }
 
         private void Add<TRequest>(string command)

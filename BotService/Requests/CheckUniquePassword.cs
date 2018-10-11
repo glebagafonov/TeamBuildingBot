@@ -7,10 +7,12 @@ using MediatR;
 namespace BotService.Requests
 {
     [UserAccess(EUserRole.User)]
-    public class RegisterRequestByTelegramAccount : IRequest
+    public class CheckUniquePassword : IRequest<bool>
     {
-        public string FirstName  { get; set; }
-        public string LastName   { get; set; }
-        public long   TelegramId { get; set; }
+        public CheckUniquePassword(string password)
+        {
+            Password = password;
+        }
+        public string Password  { get; set; }
     }
 }
