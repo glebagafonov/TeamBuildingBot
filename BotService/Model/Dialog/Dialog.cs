@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Bot.Infrastructure.Exceptions;
@@ -15,6 +16,7 @@ namespace BotService.Model.Dialog
         private readonly ILogger _logger;
         private readonly List<IDialogAction> _dialogActions;
 
+        private Guid _userId;
         private int _dialogState;
         protected TDialogData DialogData;
 
@@ -27,8 +29,9 @@ namespace BotService.Model.Dialog
             _dialogState   = 0;
         }
 
-        public IDialog<TDialogData> Start(ICommunicator communicator, TDialogData dialogData)
+        public IDialog<TDialogData> Start(ICommunicator communicator, Guid userId, TDialogData dialogData)
         {
+            _userId = userId;
             DialogData = dialogData;
             communicator.SendMessage(CommandName);
             DoAction(communicator);
@@ -46,6 +49,12 @@ namespace BotService.Model.Dialog
                     IncreaseState(communicator);
                 }
                     break;
+                case IDialogSendImageAction dialogSendImageAction:
+                {
+                    communicator.SendImage(dialogSendImageAction.ImageStream);
+                    IncreaseState(communicator);
+                }
+                    break;
             }
         }
 
@@ -57,6 +66,12 @@ namespace BotService.Model.Dialog
                 case IDialogSendMessageAction dialogSendMessageAction:
                 {
                     communicator.SendMessage(dialogSendMessageAction.Message);
+                    IncreaseState(communicator);
+                }
+                    break;
+                case IDialogSendImageAction dialogSendImageAction:
+                {
+                    communicator.SendImage(dialogSendImageAction.ImageStream);
                     IncreaseState(communicator);
                 }
                     break;
@@ -104,7 +119,7 @@ namespace BotService.Model.Dialog
 
         private void RaiseCompleteEvent()
         {
-            CompleteEvent?.Invoke();
+            CompleteEvent?.Invoke(_userId);
         }
 
         protected abstract string CommandName { get; }
@@ -114,6 +129,11 @@ namespace BotService.Model.Dialog
         public void Add(string message)
         {
             _dialogActions.Add(new DialogSendMessageAction(_dialogActions.Count, message));
+        }
+        
+        public void Add(MemoryStream imageStream)
+        {
+            _dialogActions.Add(new DialogSendImageAction(_dialogActions.Count, imageStream));
         }
 
         public void Add(Func<string, TDialogData, TDialogData> action)

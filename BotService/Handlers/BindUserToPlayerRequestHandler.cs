@@ -20,29 +20,33 @@ namespace BotService.Handlers
         private readonly ILogger _logger;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
         private readonly IPlayerRepository _playerRepository;
+        private readonly IBotUserRepository _botUserRepository;
 
         public BindUserToPlayerRequestHandler(ILogger logger,
             IThreadContextSessionProvider threadContextSessionProvider, 
-            IPlayerRepository playerRepository)
+            IPlayerRepository playerRepository,
+            IBotUserRepository botUserRepository)
         {
             _logger                       = logger;
             _threadContextSessionProvider = threadContextSessionProvider;
             _playerRepository = playerRepository;
+            _botUserRepository = botUserRepository;
         }
 
         public Task<Unit> Handle(BindUserToPlayerRequest request, CancellationToken cancellationToken)
         {
             using (_threadContextSessionProvider.CreateSessionScope())
             {
+                var user = _botUserRepository.Get(request.UserId);
                 _playerRepository.Save(new Player()
                                        {
                                            Id                 = Guid.NewGuid(),
-                                           User               = request.User,
+                                           User               = user,
                                            ParticipationRatio = request.ParticipationRatio,
                                            IsActive           = request.IsActive,
                                            SkillValue         = request.SkillValue
                                        });
-                _logger.Info($"[{request.User.Id}]: Player added");
+                _logger.Info($"[{user.Id}]: Player added");
             }
             return Unit.Task;
         }

@@ -6,6 +6,6 @@ namespace BotService.Model
 {
     public static class ActionContext
     {
-        public static Dictionary<ICommunicator, BotUser> User { get; set; }
+        //public static Dictionary<ICommunicator, BotUser> User { get; set; }
     }
 }

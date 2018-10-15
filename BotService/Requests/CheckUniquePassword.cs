@@ -6,7 +6,6 @@ using MediatR;
 
 namespace BotService.Requests
 {
-    [UserAccess(EUserRole.User)]
     public class CheckUniquePassword : IRequest<bool>
     {
         public CheckUniquePassword(string password)

@@ -7,22 +7,13 @@ using MediatR;
 
 namespace BotService.Requests
 {
-    public class RegisterRequest : IRequest
+    public class AuthorizeRequest : IRequest<BotUser>
     {
-        public string FirstName { get; set; }
-        public string LastName  { get; set; }
-
         public ICommunicator Communicator { get; }
 
-        public RegisterRequest(ICommunicator communicator)
+        public AuthorizeRequest(ICommunicator communicator)
         {
             Communicator = communicator;
         }
-
-        public RegisterRequest()
-        {
-            
-        }
-        //public string Password   { get; set; }
     }
 }

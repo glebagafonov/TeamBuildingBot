@@ -1,12 +1,13 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services.Interfaces;
 using BotService.Model.Dialog.Interfaces;
+using BotService.Model.Dialogs;
 using BotService.Requests;
 using BotService.Services.Interfaces;
-using BotService.Services.TelegramServices.TelegramDialogs;
 using MediatR;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -18,89 +19,45 @@ namespace BotService.Services.TelegramServices
     public class TelegramInteractionService
     {
         private const string CancelCommand = "/cancel";
-        private readonly IServiceConfiguration _serviceConfiguration;
-        private readonly IMediator _mediator;
-        private readonly IBotUserRepository _botUserRepository;
-        private readonly IThreadContextSessionProvider _threadContextSessionProvider;
         private readonly ILogger _logger;
-        private readonly IPlayerRepository _playerRepository;
+        private readonly IMediator _mediator;
+        private readonly IUserInteractionService _userInteractionService;
         private readonly ITelegramBotClient _client;
-        private IDialog _currentDialog;
 
         public TelegramInteractionService(IServiceConfiguration serviceConfiguration,
-            IMediator mediator,
-            IBotUserRepository botUserRepository,
-            IThreadContextSessionProvider threadContextSessionProvider,
             ILogger logger,
-            IPlayerRepository playerRepository)
+            IMediator mediator,
+            IUserInteractionService userInteractionService)
         {
-            _serviceConfiguration         = serviceConfiguration;
-            _mediator                     = mediator;
-            _botUserRepository            = botUserRepository;
-            _threadContextSessionProvider = threadContextSessionProvider;
-            _logger                       = logger;
-            _playerRepository = playerRepository;
-            _client                       = new TelegramBotClient(_serviceConfiguration.TelegramToken);
+            _logger                 = logger;
+            _mediator               = mediator;
+            _userInteractionService = userInteractionService;
+            _client                 = new TelegramBotClient(serviceConfiguration.TelegramToken);
             _client.SetWebhookAsync("");
 
             _client.OnMessage += Bot_OnMessage;
-            //_client.On
             _client.StartReceiving();
         }
 
         private async void Bot_OnMessage(object sender, MessageEventArgs messageEventArgs)
         {
             var message = messageEventArgs.Message;
+
+
+            _logger.Info($"[{message.From.Id}]: Got message");
             try
             {
+                var communicator = GetCommunicator(message);
+                var user         = await _mediator.Send(new AuthorizeRequest(communicator));
+
                 if (message.Type == MessageType.Text)
                 {
-                    if (_currentDialog != null)
-                    {
-                        if (message.Text.Contains(CancelCommand))
-                        {
-                            _currentDialog = null;
-                            await SendMessage(new ChatId(message.Chat.Id),
-                                "Введи команду. (список команд можно получить использовав команду - /help)");
-                        }
-                        else
-                        {
-                            
-                            //_currentDialog.ProcessMessage(message.Text, message.MessageId, message.Chat.Id);
-                        }
-
-                    }
-                    else
-                    {
-                        if (message.Text.Contains("/register"))
-                        {
-//                            _currentDialog = new RegisterTelegramDialog(message.Chat.Id, message.From.Id, _mediator,
-//                                this, _logger).Create();
-//                            _currentDialog.CompleteEvent += CompleteEventHandler;
-                        }
-                        else if (message.Text.Contains("/bindplayer"))
-                        {
-                            /*_currentDialog = new BindUserToPlayerDialog(message.Chat.Id, message.From.Id, _mediator,
-                                this, _logger, _botUserRepository, _threadContextSessionProvider, _playerRepository).Create();
-                            _currentDialog.CompleteEvent += CompleteEventHandler;*/
-                        }
-                        else
-                        {
-                            await SendMessage(new ChatId(message.Chat.Id),
-                                "Не понимаю тебя. Возможно тебе поможет команда - /help");
-                        }
-                    }
+                    _userInteractionService.ProcessMessage(user, GetCommunicator(message), message.Text);
                 }
                 else
                 {
                     await SendMessage(new ChatId(message.Chat.Id), "Я понимаю только текст!", message.MessageId);
                 }
-            }
-            catch (UnauthorizedException exception)
-            {
-                await SendMessage(new ChatId(message.Chat.Id), "У вас нет прав для выполнения этой команды",
-                    message.MessageId);
-                _logger.Error(exception);
             }
             catch (Exception exception)
             {
@@ -108,15 +65,20 @@ namespace BotService.Services.TelegramServices
             }
         }
 
-        private void CompleteEventHandler()
+        private TelegramCommunicator GetCommunicator(Message message)
         {
-            _currentDialog.CompleteEvent -= CompleteEventHandler;
-            _currentDialog = null;
+            return new TelegramCommunicator(message.Chat.Id, message.From.Id, this);
         }
 
         public async Task SendMessage(ChatId chat, string text, int? messageId = 0)
         {
             await _client.SendTextMessageAsync(chat, text, replyToMessageId: messageId ?? 0);
+        }
+        
+        public async Task SendImage(ChatId chat, MemoryStream stream, int? messageId = 0)
+        {
+            stream.Position = 0;
+            await _client.SendPhotoAsync(chat, stream);
         }
     }
 }

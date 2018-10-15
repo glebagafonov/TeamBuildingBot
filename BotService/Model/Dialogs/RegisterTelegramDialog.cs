@@ -1,19 +1,51 @@
-using Bot.Infrastructure.Exceptions;
+using System.IO;
 using Bot.Infrastructure.Services.Interfaces;
 using BotService.Model.Dialog;
-using BotService.Model.Dialog.Interfaces;
 using BotService.Requests;
+using CaptchaGen;
 using MediatR;
 
-namespace BotService.Services.TelegramServices.TelegramDialogs
+namespace BotService.Model.Dialogs
 {
     public class RegisterTelegramDialog : Dialog<RegisterRequest>
     {
+        private string _captcha;
+
         private readonly IMediator _mediator;
 
         public RegisterTelegramDialog(ILogger logger, IMediator mediator) : base(logger)
         {
             _mediator = mediator;
+            
+            
+            _captcha   = CaptchaCodeFactory.GenerateCaptchaCode(4);
+            CaptchaAction();
+        }
+
+        private void CaptchaAction()
+        {
+            Add("Введи капчу или используй команду - /cancel");
+            var image = ImageFactory.GenerateImage(_captcha);
+            Add(image);
+            Add((message, registerRequestByTelegramAccount) =>
+            {
+                if (message != _captcha)
+                {
+                    _captcha = CaptchaCodeFactory.GenerateCaptchaCode(4);
+                    
+                    CaptchaAction();
+                }
+                else
+                {
+                    RegisterBranch();
+                }
+
+                return registerRequestByTelegramAccount;
+            });
+        }
+
+        private void RegisterBranch()
+        {
             Add("Введи имя");
             Add((message, registerRequestByTelegramAccount) =>
             {
@@ -38,12 +70,12 @@ namespace BotService.Services.TelegramServices.TelegramDialogs
 //            });
             Add("Регистрация завершена");
         }
-        
+
         protected override string CommandName => "Регистрация";
+
         public override void ProcessDialogEnded()
         {
-            _mediator.Send(DialogData);
-
+                _mediator.Send(DialogData);
         }
     }
 }

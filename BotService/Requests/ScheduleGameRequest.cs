@@ -1,3 +1,4 @@
+using System;
 using Bot.Domain.Entities;
 using Bot.Domain.Entities.Base;
 using Bot.Domain.Enums;
@@ -7,19 +8,18 @@ using MediatR;
 
 namespace BotService.Requests
 {
-    public class RegisterRequest : IRequest
+    public class ScheduleGameRequest : IRequest
     {
-        public string FirstName { get; set; }
-        public string LastName  { get; set; }
+        public DateTime DateTime { get; set; }
 
         public ICommunicator Communicator { get; }
 
-        public RegisterRequest(ICommunicator communicator)
+        public ScheduleGameRequest(ICommunicator communicator)
         {
             Communicator = communicator;
         }
 
-        public RegisterRequest()
+        public ScheduleGameRequest()
         {
             
         }
