@@ -94,25 +94,38 @@ namespace BotService.Services
             Kernel?.Components.Add<IBindingResolver, ContravariantBindingResolver>();
 
             Kernel?.Bind(scan => scan.FromAssemblyContaining<IMediator>().SelectAllClasses().BindDefaultInterface());
-            Kernel?.Bind(scan => scan.FromAssemblyContaining<RegisterRequestByTelegramAccountHandler>().SelectAllClasses().InheritedFrom(typeof(IRequestHandler<,>)).BindAllInterfaces());
-            Kernel?.Bind(scan => scan.FromAssemblyContaining<RegisterRequestByTelegramAccountHandler>().SelectAllClasses().InheritedFrom(typeof(INotificationHandler<>)).BindAllInterfaces());
-            
+            Kernel?.Bind(scan =>
+                scan.FromAssemblyContaining<RegisterRequestHandler>().SelectAllClasses()
+                    .InheritedFrom(typeof(IRequestHandler<,>)).BindAllInterfaces());
+            Kernel?.Bind(scan =>
+                scan.FromAssemblyContaining<RegisterRequestHandler>().SelectAllClasses()
+                    .InheritedFrom(typeof(INotificationHandler<>)).BindAllInterfaces());
+
             //Pipeline
             Kernel?.Bind(typeof(IPipelineBehavior<,>)).To(typeof(RequestPreProcessorBehavior<,>));
             Kernel?.Bind(typeof(IPipelineBehavior<,>)).To(typeof(LogExceptionBehavior<,>));
-            Kernel?.Bind(typeof(IPipelineBehavior<,>)).To(typeof(AuthorizationBehavior<,>));
+            //Kernel?.Bind(typeof(IPipelineBehavior<,>)).To(typeof(AuthorizationBehavior<,>));
 
             Bind<ServiceFactory>().ToMethod(ctx => t => ctx.Kernel.TryGet(t));
         }
 
         private void BindServices()
-        { 
-            Bind<ITelegramAuthorizationManager>()
-                .To<TelegramAuthorizationManager>()
-                .InSingletonScope();
-            
+        {
             Bind<TelegramInteractionService>()
                 .ToSelf()
+                .InSingletonScope();
+
+            Bind<CommandFactory>()
+                .ToSelf()
+                .InSingletonScope()
+                .OnActivation(x => x.Initialize());
+
+            Bind<IUserInteractionService>()
+                .To<UserInteractionService>()
+                .InSingletonScope();
+
+            Bind<IDialogStorage>()
+                .To<DialogStorage>()
                 .InSingletonScope();
 
             Bind<ILogger>()
@@ -125,14 +138,16 @@ namespace BotService.Services
                 .InSingletonScope();
         }
     }
-    
-        
+
+
     public static class BindingExtensions
     {
-        public static IBindingInNamedWithOrOnSyntax<object> WhenNotificationMatchesType<TNotification>(this IBindingWhenSyntax<object> syntax)
+        public static IBindingInNamedWithOrOnSyntax<object> WhenNotificationMatchesType<TNotification>(
+            this IBindingWhenSyntax<object> syntax)
             where TNotification : INotification
         {
-            return syntax.When(request => typeof(TNotification).IsAssignableFrom(request.Service.GenericTypeArguments.Single()));
+            return syntax.When(request =>
+                typeof(TNotification).IsAssignableFrom(request.Service.GenericTypeArguments.Single()));
         }
     }
 }
