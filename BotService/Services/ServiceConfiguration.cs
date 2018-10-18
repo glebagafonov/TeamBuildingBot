@@ -22,9 +22,15 @@ namespace BotService.Services
         public TimeSpan InviteTime => new TimeSpan(int.Parse(ConfigurationManager.AppSettings["inviteTime"].Split(':')[0]),
             int.Parse(ConfigurationManager.AppSettings["inviteTime"].Split(':')[1]),  0);
 
-        public TimeSpan GameScheduleThreshold => new TimeSpan(int.Parse(ConfigurationManager.AppSettings["gameScheduleThresholdHours"].Split(':')[0]),
-            int.Parse(ConfigurationManager.AppSettings["gameScheduleThresholdHours"].Split(':')[1]), 0);
+        public TimeSpan GameScheduleThreshold => new TimeSpan(int.Parse(ConfigurationManager.AppSettings["gameScheduleThreshold"].Split(':')[0]),
+            int.Parse(ConfigurationManager.AppSettings["gameScheduleThreshold"].Split(':')[1]), 0);
 
         public int PlayersPerTeam => int.Parse(ConfigurationManager.AppSettings["playersPerTeam"]);
+        
+        public TimeSpan StartGameProcess => new TimeSpan(int.Parse(ConfigurationManager.AppSettings["startGameProcess"].Split(':')[0]),
+            int.Parse(ConfigurationManager.AppSettings["startGameProcess"].Split(':')[1]), 0);
+        
+        public TimeSpan GameDeadline => new TimeSpan(int.Parse(ConfigurationManager.AppSettings["gameDeadline"].Split(':')[0]),
+            int.Parse(ConfigurationManager.AppSettings["gameDeadline"].Split(':')[1]), 0);
     }
 }

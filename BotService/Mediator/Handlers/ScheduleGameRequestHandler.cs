@@ -49,6 +49,10 @@ namespace BotService.Mediator.Handlers
                 game.MarkAsNew();
                 _gameRepository.Save(game);
                 _scheduler.AddEvent(new PrimaryCollectingEventMetadata() { GameId = game.Id},
+                    request.DateTime.Subtract(_configuration.StartGameProcess, _configuration.StartDayTime,
+                        _configuration.EndDayTime));
+                
+                _scheduler.AddEvent(new DistributionByTeamsEventMetadata() { GameId = game.Id},
                     request.DateTime.Subtract(_configuration.GameScheduleThreshold, _configuration.StartDayTime,
                         _configuration.EndDayTime));
 

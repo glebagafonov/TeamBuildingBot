@@ -3,13 +3,13 @@ using Bot.Infrastructure.Model;
 
 namespace BotService.Model.SchedulerMetadatas
 {
-    public class PlayersCollectedEventMetadata : IScheduledEventMetadata
+    public class DistributionByTeamsEventMetadata : IGameScheduledEventMetadata
     {
         public Guid GameId { get; set; }
 
         public override string ToString()
         {
-            return $"PlayersCollectedEventMetadata: Game:{GameId}";
+            return $"DistributionByTeamsEventMetadata: Game:{GameId}";
         }        
     }
 }

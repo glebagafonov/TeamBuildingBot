@@ -1,6 +1,7 @@
 using Bot.Domain.Entities;
 using Bot.Domain.Entities.Base;
 using Bot.Infrastructure.Exceptions;
+using Bot.Infrastructure.Services;
 using BotService.Services.Interfaces;
 using BotService.Services.TelegramServices;
 
@@ -8,14 +9,11 @@ namespace BotService.Services
 {
     public class CommunicatorFactory : ICommunicatorFactory
     {
-        private readonly TelegramInteractionService _telegramInteractionService;
+        private TelegramInteractionService _telegramInteractionService;
 
-        public CommunicatorFactory(TelegramInteractionService telegramInteractionService)
-        {
-            _telegramInteractionService = telegramInteractionService;
-        }
         public ICommunicator GetCommunicator(BaseAccount account)
         {
+            _telegramInteractionService = ServiceLocator.Get<TelegramInteractionService>();
             switch (account)
             {
                 case TelegramAccount telegramAccount:

@@ -23,14 +23,14 @@ namespace Bot.Infrastructure.Mappings
             {
                 c.Cascade(Cascade.All);
                 c.Key(k => k.Column("GameId"));
-                c.Table("Game_Player");
+                c.Table("Game_AcceptedPlayers");
             }, r => r.ManyToMany(m => m.Column("PlayerId")));
             
-            Set(x => x.DeclinedPlayers, c =>
+            Set(x => x.RejectedPlayers, c =>
             {
                 c.Cascade(Cascade.All);
                 c.Key(k => k.Column("GameId"));
-                c.Table("Game_Player");
+                c.Table("Game_RejectedPlayers");
             }, r => r.ManyToMany(m => m.Column("PlayerId")));
             
             Set(x => x.RequestedPlayers, c =>

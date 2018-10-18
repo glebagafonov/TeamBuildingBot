@@ -19,7 +19,6 @@ namespace BotService.Services.TelegramServices
 {
     public class TelegramInteractionService
     {
-        private const string CancelCommand = "/cancel";
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
         private readonly IUserInteractionService _userInteractionService;

@@ -3,7 +3,7 @@ using Bot.Infrastructure.Model;
 
 namespace BotService.Model.SchedulerMetadatas
 {
-    public class PlayerGameAcceptanceTimeoutEventMetadata : IScheduledEventMetadata
+    public class PlayerGameAcceptanceTimeoutEventMetadata : IGameScheduledEventMetadata
     {
         public Guid GameId { get; set; }
         public Guid PlayerId { get; set; }

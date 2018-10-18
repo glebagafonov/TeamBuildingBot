@@ -18,6 +18,8 @@ namespace Bot.Test
         public void GenerateTeam()
         {
             var times = new List<(TimeSpan, int)>();
+            
+            times.Add((GenerateTime(2), 2));
             var count = Enumerable.Range(5, 7);
             foreach (var i in count)
             {

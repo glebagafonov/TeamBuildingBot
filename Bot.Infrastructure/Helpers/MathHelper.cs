@@ -23,7 +23,7 @@ namespace Bot.Infrastructure.Helpers
         }
         
         public static IEnumerable<IEnumerable<T>> Combinations<T>(List<T> elements, int k)
-        {
+        { не работает с 2
             return k == 0 ? new[] { new T[0] } :
                 elements.SelectMany((e, i) =>
                     Combinations(elements.Skip(i + 1).ToList(), (k - 1)).Select(c => (new[] {e}).Concat(c)));

@@ -9,7 +9,7 @@ namespace Bot.Domain.Entities
         public virtual ICollection<SortedPlayer> SortedPlayersByRating { get; set; }
         public virtual ICollection<PlayerEvent>  RequestedPlayers      { get; set; }
         public virtual ICollection<Player>       AcceptedPlayers       { get; set; }
-        public virtual ICollection<Player>       DeclinedPlayers       { get; set; }
+        public virtual ICollection<Player>       RejectedPlayers       { get; set; }
         public virtual ICollection<TeamPlayer>   DistributedPlayers    { get; set; }
 
 
@@ -17,7 +17,7 @@ namespace Bot.Domain.Entities
         {
             SortedPlayersByRating = new List<SortedPlayer>();
             RequestedPlayers      = new List<PlayerEvent>();
-            DeclinedPlayers       = new List<Player>();
+            RejectedPlayers       = new List<Player>();
             AcceptedPlayers       = new List<Player>();
             DistributedPlayers    = new List<TeamPlayer>();
         }

@@ -11,5 +11,7 @@ namespace BotService.Services.Interfaces
         TimeSpan InviteTime            { get; }
         TimeSpan GameScheduleThreshold { get; }
         int      PlayersPerTeam        { get; }
+        TimeSpan StartGameProcess      { get; }
+        TimeSpan GameDeadline          { get; }
     }
 }

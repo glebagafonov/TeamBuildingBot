@@ -71,13 +71,13 @@ namespace BotService.Mediator.Handlers
         {
             game.RequestedPlayers.RemoveAll(x => x.Player.Id == player.Id);
             game.AcceptedPlayers.Add(player);
-            if (game.AcceptedPlayers.Count == _serviceConfiguration.PlayersPerTeam * 2)
-            {
-                _scheduler.DeleteEvent<PlayersCollectedEventMetadata>(x => x.GameId == game.Id);
-                _mediator.Send(
-                    new ScheduledEventRequest<PlayersCollectedEventMetadata>(new PlayersCollectedEventMetadata()
-                                                                             {GameId = game.Id}));
-            }
+//            if (game.AcceptedPlayers.Count == _serviceConfiguration.PlayersPerTeam * 2)
+//            {
+//                //_scheduler.DeleteEvent<PlayersCollectedEventMetadata>(x => x.GameId == game.Id);
+////                _mediator.Send(
+////                    new ScheduledEventRequest<PlayersCollectedEventMetadata>(new PlayersCollectedEventMetadata()
+////                                                                             {GameId = game.Id}));
+//            }
         }
 
         private void ProcessReject(Game game, Player player)
@@ -91,7 +91,7 @@ namespace BotService.Mediator.Handlers
             var nextPlayer = game.SortedPlayersByRating
                 .Where(x => game.RequestedPlayers.All(y => x.Player.Id != y.Player.Id))
                 .Where(x => game.AcceptedPlayers.All(y => x.Player.Id != y.Id))
-                .Where(x => game.DeclinedPlayers.All(y => x.Player.Id != y.Id))
+                .Where(x => game.RejectedPlayers.All(y => x.Player.Id != y.Id))
                 .OrderBy(x => x.OrderNumber)
                 .FirstOrDefault();
             if (nextPlayer != null)
@@ -114,7 +114,7 @@ namespace BotService.Mediator.Handlers
         private static void AddPlayerToDeclinedPlayersList(Game game, Player player)
         {
             game.RequestedPlayers.RemoveAll(x => x.Player.Id == player.Id);
-            game.DeclinedPlayers.Add(player);
+            game.RejectedPlayers.Add(player);
         }
     }
 }

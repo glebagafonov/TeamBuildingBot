@@ -146,7 +146,8 @@ namespace BotService.Services
 
         public void SendMessage(string text, BotUser user)
         {
-            user.UserAccounts.Select(x => _communicatorFactory.GetCommunicator(x)).ForEach(x => x.SendMessage(text));
+            foreach (var x in user.UserAccounts.Select(x => _communicatorFactory.GetCommunicator(x)))
+                x.SendMessage(text);
         }
 
         public void StartGameConfirmationDialog(Player player, List<ICommunicator> communicators, Guid gameId)
@@ -164,7 +165,8 @@ namespace BotService.Services
             {
                 _dialogStorage.RemoveDialog(user);
                 currentDialog.CompleteEvent -= CompleteEventHandler;
-                communicators.ForEach(x => x.SendMessage("Текущий диалог прерван."));
+                foreach (var x in communicators) 
+                    x.SendMessage("Текущий диалог прерван.");
             }
 
             CreateDialog(dialog, user);

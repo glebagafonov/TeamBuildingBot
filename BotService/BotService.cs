@@ -33,8 +33,6 @@ namespace BotService
 {
     public partial class BotService : ServiceBase
     {
-        static ITelegramBotClient botClient;
-
         static List<BotUser> _users = new List<BotUser>()
                                       {
                                           new BotUser()

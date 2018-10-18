@@ -37,7 +37,7 @@ namespace BotService.Model.Dialogs
                     throw new InvalidInputException("Не могу понять. Введи время по маске \"dd.MM.YYYY HH:mm\"");
                 }
 
-                var startScheduledEventsDateTime = DateTime.Now.Add(_configuration.GameScheduleThreshold, _configuration.StartDayTime, _configuration.EndDayTime); 
+                var startScheduledEventsDateTime = DateTime.Now.Add(_configuration.StartGameProcess, _configuration.StartDayTime, _configuration.EndDayTime); 
                 
                 if (dateTime < startScheduledEventsDateTime)
                 {
@@ -56,8 +56,8 @@ namespace BotService.Model.Dialogs
 
         private void WarningDialog()
         {
-            Add($"Игра планируется за 24 рабочих часа до игры.");
-            var dateTime = DateTime.Now.Add(_configuration.GameScheduleThreshold, _configuration.StartDayTime,
+            Add($"Игра планируется за {_configuration.StartGameProcess} до игры. (считается в рабочих часах)");
+            var dateTime = DateTime.Now.Add(_configuration.StartGameProcess, _configuration.StartDayTime,
                 _configuration.EndDayTime);
             Add($"Дата должна быть не раньше {dateTime.ToString(DateTimeHelper.DateFormat)}. Или собирай вручную :)");
             Add("Введи дату игры в формате \"dd.MM.yyyy HH:mm\" или используй команду - /cancel");

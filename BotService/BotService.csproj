@@ -149,7 +149,7 @@
     <Compile Include="Mediator\Handlers\LogExceptionBehavior.cs" />
     <Compile Include="Mediator\Handlers\RegisterRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PlayerGameAcceptanceTimeoutEventMetadataRequestHandler.cs" />
-    <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PlayersCollectedEventMetadataRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\ScheduledEventHandlers\DistributionByTeamsEventMetadataRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PrimaryCollectingEventMetadataRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\PlayerGameDecisionRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\ScheduleGameRequestHandler.cs" />
@@ -176,6 +176,7 @@
     <Compile Include="Model\Dialog\Interfaces\IDialogSendImageAction.cs" />
     <Compile Include="Model\Dialog\Interfaces\IDialogSendMessageAction.cs" />
     <Compile Include="Model\Dialog\Interfaces\IDialogUserAction.cs" />
+    <Compile Include="Model\SchedulerMetadatas\IGameScheduledEventMetadata.cs" />
     <Compile Include="Model\SchedulerMetadatas\PlayerGameAcceptanceTimeoutEventMetadata.cs" />
     <Compile Include="Model\SchedulerMetadatas\PlayersCollectedEventMetadata.cs" />
     <Compile Include="Model\SchedulerMetadatas\PrimaryCollectingEventMetadata.cs" />
