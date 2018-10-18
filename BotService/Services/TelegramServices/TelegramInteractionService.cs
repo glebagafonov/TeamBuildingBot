@@ -1,12 +1,13 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Bot.Domain.Entities;
 using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services.Interfaces;
+using BotService.Mediator.Requests;
 using BotService.Model.Dialog.Interfaces;
 using BotService.Model.Dialogs;
-using BotService.Requests;
 using BotService.Services.Interfaces;
 using MediatR;
 using Telegram.Bot;
@@ -56,7 +57,7 @@ namespace BotService.Services.TelegramServices
                 }
                 else
                 {
-                    await SendMessage(new ChatId(message.Chat.Id), "Я понимаю только текст!", message.MessageId);
+                    await SendMessage(message.Chat.Id, "Я понимаю только текст!", message.MessageId);
                 }
             }
             catch (Exception exception)
@@ -65,14 +66,20 @@ namespace BotService.Services.TelegramServices
             }
         }
 
-        private TelegramCommunicator GetCommunicator(Message message)
+        public TelegramCommunicator GetCommunicator(TelegramAccount account)
         {
-            return new TelegramCommunicator(message.Chat.Id, message.From.Id, this);
+            return new TelegramCommunicator(account.TelegramId, this);
         }
 
-        public async Task SendMessage(ChatId chat, string text, int? messageId = 0)
+        private TelegramCommunicator GetCommunicator(Message message)
         {
-            await _client.SendTextMessageAsync(chat, text, replyToMessageId: messageId ?? 0);
+            return new TelegramCommunicator(message.From.Id, this);
+        }
+
+        public async Task SendMessage(long telegramId, string text, int? messageId = 0)
+        {
+            _logger.Trace($"[{telegramId}]: Send message");
+            await _client.SendTextMessageAsync(telegramId, text, replyToMessageId: messageId ?? 0);
         }
         
         public async Task SendImage(ChatId chat, MemoryStream stream, int? messageId = 0)

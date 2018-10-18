@@ -1,15 +1,19 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bot.Domain.Entities;
+using Bot.Domain.Entities.Base;
 using Bot.Domain.Enums;
 using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services.Interfaces;
+using BotService.Mediator.Requests;
 using BotService.Model.Dialog.Interfaces;
 using BotService.Model.Dialogs;
-using BotService.Requests;
 using BotService.Services.Interfaces;
+using BotService.Services.TelegramServices;
 using MediatR;
+using NHibernate.Util;
 
 namespace BotService.Services
 {
@@ -21,6 +25,9 @@ namespace BotService.Services
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
         private readonly IPlayerRepository _playerRepository;
+        private readonly IServiceConfiguration _serviceConfiguration;
+        private readonly IGameRepository _gameRepository;
+        private readonly ICommunicatorFactory _communicatorFactory;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
 
         public UserInteractionService(
@@ -30,7 +37,10 @@ namespace BotService.Services
             IMediator mediator,
             IThreadContextSessionProvider threadContextSessionProvider,
             IBotUserRepository botUserRepository,
-            IPlayerRepository playerRepository
+            IPlayerRepository playerRepository,
+            IServiceConfiguration serviceConfiguration,
+            IGameRepository gameRepository,
+            ICommunicatorFactory communicatorFactory
         )
         {
             _dialogStorage                = dialogStorage;
@@ -40,6 +50,9 @@ namespace BotService.Services
             _threadContextSessionProvider = threadContextSessionProvider;
             _botUserRepository            = botUserRepository;
             _playerRepository             = playerRepository;
+            _serviceConfiguration         = serviceConfiguration;
+            _gameRepository = gameRepository;
+            _communicatorFactory = communicatorFactory;
         }
 
         public void ProcessMessage(BotUser user, ICommunicator communicator, string message)
@@ -131,18 +144,44 @@ namespace BotService.Services
             }
         }
 
+        public void SendMessage(string text, BotUser user)
+        {
+            user.UserAccounts.Select(x => _communicatorFactory.GetCommunicator(x)).ForEach(x => x.SendMessage(text));
+        }
+
+        public void StartGameConfirmationDialog(Player player, List<ICommunicator> communicators, Guid gameId)
+        {
+            SetNewDialog(player.User, communicators,
+                new PlayerGameDecisionRequestDialog(communicators, player.User.Id,
+                    new PlayerGameDecisionRequest() {GameId = gameId, PlayerId = player.Id}, _logger, _mediator,
+                    _threadContextSessionProvider, _gameRepository));
+        }
+
+        private void SetNewDialog(BotUser user, IEnumerable<ICommunicator> communicators, IDialog dialog)
+        {
+            var currentDialog = _dialogStorage.Get(user);
+            if (currentDialog != null)
+            {
+                _dialogStorage.RemoveDialog(user);
+                currentDialog.CompleteEvent -= CompleteEventHandler;
+                communicators.ForEach(x => x.SendMessage("Текущий диалог прерван."));
+            }
+
+            CreateDialog(dialog, user);
+        }
+
         private void ScheduleGameCommand(BotUser user, ICommunicator communicator)
         {
-            IDialog dialog = new ScheduleGameRequestDialog(_logger, _mediator).Start(communicator, user.Id,
-                new ScheduleGameRequest(communicator));
+            IDialog dialog = new ScheduleGameRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
+                new ScheduleGameRequest(communicator), _logger, _mediator, _serviceConfiguration);
             CreateDialog(dialog, user);
         }
 
         private void BindUserCommand(BotUser user, ICommunicator communicator)
         {
-            IDialog dialog = new BindUserToPlayerDialog(_logger, _mediator, _threadContextSessionProvider,
-                    _botUserRepository, _playerRepository)
-                .Start(communicator, user.Id, new BindUserToPlayerRequest());
+            IDialog dialog = new BindUserToPlayerDialog(new List<ICommunicator>(){communicator}, user.Id, new BindUserToPlayerRequest(), _logger,
+                    _mediator, _threadContextSessionProvider,
+                    _botUserRepository, _playerRepository);
             CreateDialog(dialog, user);
         }
 
@@ -150,6 +189,7 @@ namespace BotService.Services
         {
             dialog.CompleteEvent += CompleteEventHandler;
             _dialogStorage.SaveDialog(user, dialog);
+            dialog.Start();
         }
 
         private void HelpCommand(BotUser user, ICommunicator communicator)
@@ -164,8 +204,8 @@ namespace BotService.Services
 
         private void RegisterCommand(BotUser user, ICommunicator communicator)
         {
-            var dialog = new RegisterTelegramDialog(_logger, _mediator).Start(communicator, user.Id,
-                new RegisterRequest(communicator));
+            var dialog = new RegisterTelegramDialog(new List<ICommunicator>(){communicator}, user.Id,
+                new RegisterRequest(communicator), _logger, _mediator);
             CreateDialog(dialog, user);
         }
 

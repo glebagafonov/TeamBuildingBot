@@ -32,13 +32,13 @@ namespace Bot.Infrastructure.Mappings.Helpers
         public static void PropertyDateTime<TObj>(this ClassMapping<TObj> mapper, Expression<Func<TObj, DateTime>> func)
             where TObj : Entity
         {
-            mapper.Property(func, attr => attr.Type<UtcDateTimeType>());
+            mapper.Property(func, attr => attr.Type<DateTimeType>());
         }
 
         public static void PropertyDateTimeNullable<TObj>(this ClassMapping<TObj> mapper, Expression<Func<TObj, DateTime?>> func)
             where TObj : Entity
         {
-            mapper.Property(func, attr => attr.Type<UtcDateTimeType>());
+            mapper.Property(func, attr => attr.Type<DateTimeType>());
         }
 
         public static void PropertyEnum<TObj, TEnum>(this SubclassMapping<TObj> mapper, Expression<Func<TObj, TEnum>> func)

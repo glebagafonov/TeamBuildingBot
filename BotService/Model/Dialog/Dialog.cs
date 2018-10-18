@@ -7,6 +7,7 @@ using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Services.Interfaces;
 using BotService.Model.Dialog.Interfaces;
 using BotService.Services.Interfaces;
+using NHibernate.Util;
 
 namespace BotService.Model.Dialog
 {
@@ -14,65 +15,66 @@ namespace BotService.Model.Dialog
         where TDialogData : class, new()
     {
         private readonly ILogger _logger;
+        private readonly IEnumerable<ICommunicator> _communicators;
         private readonly List<IDialogAction> _dialogActions;
 
         private Guid _userId;
         private int _dialogState;
         protected TDialogData DialogData;
 
-        protected Dialog(ILogger logger)
+        protected Dialog(ILogger logger, IEnumerable<ICommunicator> communicators, Guid userId, TDialogData dialogData)
         {
             _logger = logger;
-            
-
+            _communicators = communicators;
             _dialogActions = new List<IDialogAction>();
             _dialogState   = 0;
+            
+            _userId    = userId;
+            DialogData = dialogData;
         }
 
-        public IDialog<TDialogData> Start(ICommunicator communicator, Guid userId, TDialogData dialogData)
+        public IDialog Start()
         {
-            _userId = userId;
-            DialogData = dialogData;
-            communicator.SendMessage(CommandName);
-            DoAction(communicator);
+            foreach (var x in _communicators) x.SendMessage(CommandName);
+            DoAction(_communicators);
             return this;
         }
 
-        private void DoAction(ICommunicator communicator)
+        private void DoAction(IEnumerable<ICommunicator> communicator)
         {
             var action = _dialogActions.FirstOrDefault(x => x.OrderNumber == _dialogState);
             switch (action)
             {
                 case IDialogSendMessageAction dialogSendMessageAction:
                 {
-                    communicator.SendMessage(dialogSendMessageAction.Message);
+                    foreach (var x in _communicators) x.SendMessage(dialogSendMessageAction.Message);
                     IncreaseState(communicator);
                 }
                     break;
                 case IDialogSendImageAction dialogSendImageAction:
                 {
-                    communicator.SendImage(dialogSendImageAction.ImageStream);
+                    foreach (var x in _communicators) x.SendImage(dialogSendImageAction.ImageStream);
                     IncreaseState(communicator);
                 }
                     break;
             }
         }
 
-        private void DoAction(string message, ICommunicator communicator)
+        private void DoAction(string message, IEnumerable<ICommunicator> communicators)
         {
             var action = _dialogActions.FirstOrDefault(x => x.OrderNumber == _dialogState);
             switch (action)
             {
                 case IDialogSendMessageAction dialogSendMessageAction:
                 {
-                    communicator.SendMessage(dialogSendMessageAction.Message);
-                    IncreaseState(communicator);
+                    foreach (var x in _communicators) x.SendMessage(dialogSendMessageAction.Message);
+                    IncreaseState(communicators);
                 }
                     break;
                 case IDialogSendImageAction dialogSendImageAction:
                 {
-                    communicator.SendImage(dialogSendImageAction.ImageStream);
-                    IncreaseState(communicator);
+                    foreach (var x in _communicators) x.SendImage(dialogSendImageAction.ImageStream);
+                    IncreaseState(communicators);
                 }
                     break;
 
@@ -81,20 +83,20 @@ namespace BotService.Model.Dialog
                     try
                     {
                         DialogData = dialogUserAction?.Action(message, DialogData);
-                        IncreaseState(communicator);
+                        IncreaseState(communicators);
                     }
                     catch (Exception e)
                     {
                         _logger.Warn(e);
-                        communicator.SendMessage(e.Message);
-                        communicator.SendMessage("Повторите попытку или введите команду - /cancel");
+                        foreach (var x in _communicators) x.SendMessage(e.Message);
+                        foreach (var x in _communicators) x.SendMessage("Повторите попытку или введите команду - /cancel");
                     }
                 }
                     break;
             }
         }
 
-        public void IncreaseState(ICommunicator communicator)
+        public void IncreaseState(IEnumerable<ICommunicator> communicators)
         {
             
             _dialogState++;
@@ -106,13 +108,13 @@ namespace BotService.Model.Dialog
             }
             else
             {
-                DoAction(communicator);
+                DoAction(communicators);
             }
         }
 
         public void ProcessMessage(string message, ICommunicator communicator)
         {
-            DoAction(message, communicator);
+            DoAction(message, new List<ICommunicator>() {communicator});
         }
 
         public event CompleteEventHandler CompleteEvent;
@@ -124,7 +126,6 @@ namespace BotService.Model.Dialog
 
         protected abstract string CommandName { get; }
         public abstract void ProcessDialogEnded();
-
 
         public void Add(string message)
         {

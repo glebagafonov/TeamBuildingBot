@@ -140,16 +140,31 @@
     <Compile Include="BotService.Designer.cs">
       <DependentUpon>BotService.cs</DependentUpon>
     </Compile>
-    <Compile Include="Handlers\DummyHandlers\DummyMediatrHandler.cs" />
-    <Compile Include="Handlers\AuthorizationBehavior.cs" />
-    <Compile Include="Handlers\LogExceptionBehavior.cs" />
-    <Compile Include="Handlers\BindUserToPlayerRequestHandler.cs" />
-    <Compile Include="Handlers\CheckUniquePasswordHandler.cs" />
-    <Compile Include="Handlers\AuthorizeRequestHandler.cs" />
-    <Compile Include="Handlers\ScheduleGameRequestHandler.cs" />
-    <Compile Include="Handlers\RegisterRequestHandler.cs" />
+    <Compile Include="Extensions\PlayersExtension.cs" />
+    <Compile Include="Mediator\Handlers\AuthorizationBehavior.cs" />
+    <Compile Include="Mediator\Handlers\AuthorizeRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\BindUserToPlayerRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\CheckUniquePasswordHandler.cs" />
+    <Compile Include="Mediator\Handlers\DummyHandlers\DummyMediatrHandler.cs" />
+    <Compile Include="Mediator\Handlers\LogExceptionBehavior.cs" />
+    <Compile Include="Mediator\Handlers\RegisterRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PlayerGameAcceptanceTimeoutEventMetadataRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PlayersCollectedEventMetadataRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PrimaryCollectingEventMetadataRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\PlayerGameDecisionRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\ScheduleGameRequestHandler.cs" />
+    <Compile Include="Mediator\Requests\PlayerGameDecisionRequest.cs" />
+    <Compile Include="Mediator\Requests\AuthorizeRequest.cs" />
+    <Compile Include="Mediator\Requests\BindUserToPlayerRequest.cs" />
+    <Compile Include="Mediator\Requests\CheckUniquePassword.cs" />
+    <Compile Include="Mediator\Requests\RegisterRequest.cs" />
+    <Compile Include="Mediator\Requests\ScheduledEventRequests\Base\IScheduledEventRequest.cs" />
+    <Compile Include="Mediator\Requests\ScheduledEventRequests\Base\ScheduledEventRequest.cs" />
+    <Compile Include="Mediator\Requests\AcceptGameRequest.cs" />
+    <Compile Include="Mediator\Requests\ScheduleGameRequest.cs" />
     <Compile Include="Model\ActionContext.cs" />
     <Compile Include="Model\Dialogs\BindUserToPlayerDialog.cs" />
+    <Compile Include="Model\Dialogs\PlayerGameDecisionRequestDialog.cs" />
     <Compile Include="Model\Dialogs\ScheduleGameRequestDialog.cs" />
     <Compile Include="Model\Dialogs\RegisterTelegramDialog.cs" />
     <Compile Include="Model\Dialog\Dialog.cs" />
@@ -161,6 +176,9 @@
     <Compile Include="Model\Dialog\Interfaces\IDialogSendImageAction.cs" />
     <Compile Include="Model\Dialog\Interfaces\IDialogSendMessageAction.cs" />
     <Compile Include="Model\Dialog\Interfaces\IDialogUserAction.cs" />
+    <Compile Include="Model\SchedulerMetadatas\PlayerGameAcceptanceTimeoutEventMetadata.cs" />
+    <Compile Include="Model\SchedulerMetadatas\PlayersCollectedEventMetadata.cs" />
+    <Compile Include="Model\SchedulerMetadatas\PrimaryCollectingEventMetadata.cs" />
     <Compile Include="Ninject\ContravariantBindingResolver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
@@ -171,16 +189,14 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\SessionProvider.cs" />
-    <Compile Include="Requests\BindUserToPlayerRequest.cs" />
-    <Compile Include="Requests\CheckUniquePassword.cs" />
-    <Compile Include="Requests\AuthorizeRequest.cs" />
-    <Compile Include="Requests\ScheduleGameRequest.cs" />
-    <Compile Include="Requests\RegisterRequest.cs" />
     <Compile Include="Services\AppNinjectModule.cs" />
+    <Compile Include="Services\BotScheduler.cs" />
     <Compile Include="Services\BotServiceSessionFactory.cs" />
     <Compile Include="Services\CommandFactory.cs" />
+    <Compile Include="Services\CommunicatorFactory.cs" />
     <Compile Include="Services\Interfaces\IBotCommandsProcessor.cs" />
     <Compile Include="Services\Interfaces\ICommunicator.cs" />
+    <Compile Include="Services\Interfaces\ICommunicatorFactory.cs" />
     <Compile Include="Services\Interfaces\IServiceConfiguration.cs" />
     <Compile Include="Services\Interfaces\IDialogStorage.cs" />
     <Compile Include="Services\Interfaces\IUserInteractionService.cs" />
@@ -211,6 +227,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Mediator" />
+    <Folder Include="Mediator\Events" />
     <Folder Include="Specifications" />
   </ItemGroup>
   <ItemGroup>

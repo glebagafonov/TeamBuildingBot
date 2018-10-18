@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Bot.Domain.Entities;
-using Bot.Domain.Entities.Base;
-using Bot.Domain.Enums;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services.Interfaces;
-using Bot.Infrastructure.Specifications;
-using BotService.Requests;
+using BotService.Mediator.Requests;
 using MediatR;
 
-namespace BotService.Handlers
+namespace BotService.Mediator.Handlers
 {
     public class BindUserToPlayerRequestHandler : IRequestHandler<BindUserToPlayerRequest>
     {

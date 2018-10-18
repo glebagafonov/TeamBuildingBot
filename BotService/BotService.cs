@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
@@ -11,12 +12,18 @@ using System.Threading.Tasks;
 using Bot.Domain.Entities;
 using Bot.Domain.Entities.Base;
 using Bot.Domain.Enums;
+using Bot.Infrastructure.Helpers;
+using Bot.Infrastructure.Model;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services;
 using Bot.Infrastructure.Services.Interfaces;
 using Bot.Infrastructure.Specifications;
+using BotService.Mediator.Requests.ScheduledEventRequests.Base;
+using BotService.Model.SchedulerMetadatas;
 using BotService.Services;
+using BotService.Services.Interfaces;
 using BotService.Services.TelegramServices;
+using MediatR;
 using Ninject;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -70,16 +77,7 @@ namespace BotService
         protected override void OnStart(string[] args)
         {
             ServiceLocator.Get<TelegramInteractionService>();
-
-           // (_users.First().UserAccounts.First() as VkAccount).User = _users.First();
-            //(_users.First().UserAccounts.Skip(1).First() as TelegramAccount).User = _users.First();
-            //var threadContextSessionProvider = ServiceLocator.Get<IThreadContextSessionProvider>();
-            //var botUserRepository = ServiceLocator.Get<IBotUserRepository>();
-//            using (threadContextSessionProvider.CreateSessionScope())
-//            {
-//                //botUserRepository.Save(_users.First());
-//                //var users = botUserRepository.ListBySpecification(new UndeletedEntities<BotUser>());
-//            }
+            ServiceLocator.Get<IScheduler>();
         }
 
         private static void CreateKernel()

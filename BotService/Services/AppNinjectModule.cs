@@ -9,9 +9,14 @@ using Bot.Infrastructure.Services;
 using Bot.Infrastructure.Services.Interfaces;
 using BotService.Handlers;
 using BotService.Handlers.DummyHandlers;
+using BotService.Mediator.Handlers;
+using BotService.Mediator.Handlers.ScheduledEventHandlers;
+using BotService.Mediator.Requests;
+using BotService.Mediator.Requests.ScheduledEventRequests;
+using BotService.Mediator.Requests.ScheduledEventRequests.Base;
+using BotService.Model.SchedulerMetadatas;
 using BotService.Ninject;
 using BotService.Providers;
-using BotService.Requests;
 using BotService.Services.Interfaces;
 using BotService.Services.TelegramServices;
 using MediatR;
@@ -94,12 +99,11 @@ namespace BotService.Services
             Kernel?.Components.Add<IBindingResolver, ContravariantBindingResolver>();
 
             Kernel?.Bind(scan => scan.FromAssemblyContaining<IMediator>().SelectAllClasses().BindDefaultInterface());
+            Kernel?.Bind(scan => scan.FromAssemblyContaining<PrimaryCollectingEventMetadataRequestHandler>()
+                .SelectAllClasses()
+                .InheritedFrom(typeof(IRequestHandler<,>)).BindAllInterfaces());
             Kernel?.Bind(scan =>
-                scan.FromAssemblyContaining<RegisterRequestHandler>().SelectAllClasses()
-                    .InheritedFrom(typeof(IRequestHandler<,>)).BindAllInterfaces());
-            Kernel?.Bind(scan =>
-                scan.FromAssemblyContaining<RegisterRequestHandler>().SelectAllClasses()
-                    .InheritedFrom(typeof(INotificationHandler<>)).BindAllInterfaces());
+                scan.FromAssemblyContaining<PrimaryCollectingEventMetadataRequestHandler>().SelectAllClasses());
 
             //Pipeline
             Kernel?.Bind(typeof(IPipelineBehavior<,>)).To(typeof(RequestPreProcessorBehavior<,>));
@@ -111,6 +115,15 @@ namespace BotService.Services
 
         private void BindServices()
         {
+            Bind<IScheduler>()
+                .To<BotScheduler>()
+                .InSingletonScope()
+                .OnActivation(x => x.Start());
+            
+            Bind<ICommunicatorFactory>()
+                .To<CommunicatorFactory>()
+                .InSingletonScope();
+
             Bind<TelegramInteractionService>()
                 .ToSelf()
                 .InSingletonScope();

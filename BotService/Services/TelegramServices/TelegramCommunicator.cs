@@ -7,25 +7,23 @@ namespace BotService.Services.TelegramServices
 {
     public class TelegramCommunicator : ICommunicator
     {
-        private long                       ChatId                     { get; }
         public  long                       TelegramId                 { get; }
         private TelegramInteractionService TelegramInteractionService { get; }
 
-        public TelegramCommunicator(long chatId, long telegramId, TelegramInteractionService telegramInteractionService)
+        public TelegramCommunicator(long telegramId, TelegramInteractionService telegramInteractionService)
         {
-            ChatId                     = chatId;
             TelegramInteractionService = telegramInteractionService;
             TelegramId                 = telegramId;
         }
 
         public void SendMessage(string text)
         {
-            TelegramInteractionService.SendMessage(ChatId, text).Wait();
+            TelegramInteractionService.SendMessage(TelegramId, text).Wait();
         }
 
         public void SendImage(MemoryStream stream)
         {
-            TelegramInteractionService.SendImage(ChatId, stream).Wait();
+            TelegramInteractionService.SendImage(TelegramId, stream).Wait();
         }
     }
 }
