@@ -158,18 +158,27 @@ namespace BotService.Services
                     _threadContextSessionProvider, _gameRepository));
         }
 
+        public void StopDialog(BotUser playerUser)
+        {
+            StopCurrentDialog(playerUser, playerUser.UserAccounts.Select(x => _communicatorFactory.GetCommunicator(x)));
+        }
+
         private void SetNewDialog(BotUser user, IEnumerable<ICommunicator> communicators, IDialog dialog)
+        {
+            StopCurrentDialog(user, communicators);
+            CreateDialog(dialog, user);
+        }
+
+        private void StopCurrentDialog(BotUser user, IEnumerable<ICommunicator> communicators)
         {
             var currentDialog = _dialogStorage.Get(user);
             if (currentDialog != null)
             {
                 _dialogStorage.RemoveDialog(user);
                 currentDialog.CompleteEvent -= CompleteEventHandler;
-                foreach (var x in communicators) 
+                foreach (var x in communicators)
                     x.SendMessage("Текущий диалог прерван.");
             }
-
-            CreateDialog(dialog, user);
         }
 
         private void ScheduleGameCommand(BotUser user, ICommunicator communicator)

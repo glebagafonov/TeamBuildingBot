@@ -13,5 +13,6 @@ namespace BotService.Services.Interfaces
         
         //start dialogs 
         void StartGameConfirmationDialog(Player player, List<ICommunicator> communicator, Guid gameId);
+        void StopDialog(BotUser playerUser);
     }
 }

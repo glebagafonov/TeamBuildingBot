@@ -148,6 +148,7 @@
     <Compile Include="Mediator\Handlers\DummyHandlers\DummyMediatrHandler.cs" />
     <Compile Include="Mediator\Handlers\LogExceptionBehavior.cs" />
     <Compile Include="Mediator\Handlers\RegisterRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PlayersCollectingDeadlineEventMetadataRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PlayerGameAcceptanceTimeoutEventMetadataRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\ScheduledEventHandlers\DistributionByTeamsEventMetadataRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PrimaryCollectingEventMetadataRequestHandler.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="Model\SchedulerMetadatas\IGameScheduledEventMetadata.cs" />
     <Compile Include="Model\SchedulerMetadatas\PlayerGameAcceptanceTimeoutEventMetadata.cs" />
     <Compile Include="Model\SchedulerMetadatas\PlayersCollectedEventMetadata.cs" />
+    <Compile Include="Model\SchedulerMetadatas\PlayersCollectingDeadlineEventMetadata.cs" />
     <Compile Include="Model\SchedulerMetadatas\PrimaryCollectingEventMetadata.cs" />
     <Compile Include="Ninject\ContravariantBindingResolver.cs" />
     <Compile Include="Program.cs" />
@@ -210,7 +212,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="x64\SQLite.Interop.dll" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">
@@ -229,8 +230,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Mediator" />
-    <Folder Include="Mediator\Events" />
-    <Folder Include="Specifications" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config.sample" />

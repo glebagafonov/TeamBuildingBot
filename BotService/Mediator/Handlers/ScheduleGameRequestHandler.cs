@@ -15,12 +15,12 @@ namespace BotService.Mediator.Handlers
     {
         private const int MaxUsersCount = 500;
 
-        private readonly ILogger _logger;
+        private readonly ILogger                       _logger;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
-        private readonly IBotUserRepository _botUserRepository;
-        private readonly IScheduler _scheduler;
-        private readonly IGameRepository _gameRepository;
-        private readonly IServiceConfiguration _configuration;
+        private readonly IBotUserRepository            _botUserRepository;
+        private readonly IScheduler                    _scheduler;
+        private readonly IGameRepository               _gameRepository;
+        private readonly IServiceConfiguration         _configuration;
 
         public ScheduleGameRequestHandler(ILogger logger,
             IThreadContextSessionProvider threadContextSessionProvider,
@@ -43,17 +43,20 @@ namespace BotService.Mediator.Handlers
             {
                 _logger.Trace($"Schedule game at {request.DateTime}");
                 var game = new Game()
-                           {
-                               DateTime = request.DateTime
-                           };
+                {
+                    DateTime = request.DateTime
+                };
                 game.MarkAsNew();
                 _gameRepository.Save(game);
-                _scheduler.AddEvent(new PrimaryCollectingEventMetadata() { GameId = game.Id},
+                _scheduler.AddEvent(new PrimaryCollectingEventMetadata() {GameId = game.Id},
                     request.DateTime.Subtract(_configuration.StartGameProcess, _configuration.StartDayTime,
                         _configuration.EndDayTime));
-                
-                _scheduler.AddEvent(new DistributionByTeamsEventMetadata() { GameId = game.Id},
+
+                _scheduler.AddEvent(new DistributionByTeamsEventMetadata() {GameId = game.Id},
                     request.DateTime.Subtract(_configuration.GameScheduleThreshold, _configuration.StartDayTime,
+                        _configuration.EndDayTime));
+                _scheduler.AddEvent(new PlayersCollectingDeadlineEventMetadata() {GameId = game.Id},
+                    request.DateTime.Subtract(_configuration.GameDeadline, _configuration.StartDayTime,
                         _configuration.EndDayTime));
 
 

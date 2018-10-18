@@ -27,6 +27,10 @@ namespace BotService.Services
             
             Add("/plangame", ECommandType.ScheduleGame, EUserRole.Moderator, "Запланировать игру");
             Add("/cancelgame", ECommandType.CancelGame, EUserRole.Moderator, "Отменить игру");
+            
+            
+            Add("/accept", ECommandType.Accept, EUserRole.Moderator, "Принять игру");
+            Add("/reject", ECommandType.Accept, EUserRole.Moderator, "Отказаться от игры");
         }
 
         private void Add(string command, ECommandType commandType, EUserRole minimalUserAccessRole, string description)

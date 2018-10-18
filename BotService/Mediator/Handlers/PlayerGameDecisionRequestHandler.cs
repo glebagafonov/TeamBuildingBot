@@ -84,6 +84,7 @@ namespace BotService.Mediator.Handlers
         {
             AddPlayerToDeclinedPlayersList(game, player);
             ProcessNewPlayer(game);
+            _scheduler.DeleteEvent<PlayerGameAcceptanceTimeoutEventMetadata>(x => x.GameId == game.Id && x.PlayerId == player.Id);
         }
         
         private void ProcessNewPlayer(Game game)

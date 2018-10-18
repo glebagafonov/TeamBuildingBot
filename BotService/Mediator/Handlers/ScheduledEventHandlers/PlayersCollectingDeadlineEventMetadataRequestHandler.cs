@@ -21,33 +21,45 @@ using Game = Bot.Domain.Entities.Game;
 namespace BotService.Mediator.Handlers.ScheduledEventHandlers
 {
     public class
-        DistributionByTeamsEventMetadataRequestHandler : IRequestHandler<
-            ScheduledEventRequest<DistributionByTeamsEventMetadata>>
+        PlayersCollectingDeadlineEventMetadataRequestHandler : IRequestHandler<
+            ScheduledEventRequest<PlayersCollectingDeadlineEventMetadata>>
     {
+        private readonly IMediator _mediator;
+        private readonly ILogger _logger;
         private readonly IServiceConfiguration _serviceConfiguration;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
+        private readonly IPlayerRepository _playerRepository;
         private readonly IGameRepository _gameRepository;
         private readonly IScheduler _scheduler;
         private readonly IUserInteractionService _userInteractionService;
+        private readonly ICommunicatorFactory _communicatorFactory;
         private readonly IBotUserRepository _botUserRepository;
 
-        public DistributionByTeamsEventMetadataRequestHandler(
+        public PlayersCollectingDeadlineEventMetadataRequestHandler(
+            IMediator mediator,
+            ILogger logger,
             IServiceConfiguration serviceConfiguration,
             IThreadContextSessionProvider threadContextSessionProvider,
+            IPlayerRepository playerRepository,
             IGameRepository gameRepository,
             IScheduler scheduler,
             IUserInteractionService userInteractionService,
+            ICommunicatorFactory communicatorFactory,
             IBotUserRepository botUserRepository)
         {
+            _mediator                     = mediator;
+            _logger                       = logger;
             _serviceConfiguration         = serviceConfiguration;
             _threadContextSessionProvider = threadContextSessionProvider;
+            _playerRepository             = playerRepository;
             _gameRepository               = gameRepository;
             _scheduler                    = scheduler;
             _userInteractionService       = userInteractionService;
+            _communicatorFactory          = communicatorFactory;
             _botUserRepository            = botUserRepository;
         }
 
-        public Task<Unit> Handle(ScheduledEventRequest<DistributionByTeamsEventMetadata> message,
+        public Task<Unit> Handle(ScheduledEventRequest<PlayersCollectingDeadlineEventMetadata> message,
             CancellationToken cancellationToken)
         {
             using (_threadContextSessionProvider.CreateSessionScope())
@@ -59,12 +71,15 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
                 if (game.AcceptedPlayers.Count != _serviceConfiguration.PlayersPerTeam * 2)
                 {
                     NotifyAboutUnsuccessfulCollecting(game, administrators);
+                    NotifyPlayers(game);
+                    _scheduler.DeleteEvent<IGameScheduledEventMetadata>(x => x.GameId == game.Id);
+                    
                 }
                 else
                 {
-                    DistributePlayersPerTeams(game);
-                    NotifyAboutSuccessfulCollecting(game, game.DistributedPlayers, administrators);
-                    NotifyPlayers(game.DistributedPlayers, game);
+                    _mediator.Send(
+                        new ScheduledEventRequest<PlayersCollectingDeadlineEventMetadata>(
+                            new PlayersCollectingDeadlineEventMetadata() {GameId = game.Id}), cancellationToken);
                 }
 
                 _gameRepository.Save(game);
@@ -75,24 +90,24 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
 
         private void NotifyAboutUnsuccessfulCollecting(Game game, List<BotUser> administrators)
         {
-            var deadlineTime = game.DateTime.Subtract(_serviceConfiguration.GameDeadline,
-                _serviceConfiguration.StartDayTime,
-                _serviceConfiguration.EndDayTime);
-
             var message =
-                $"Команда не набралась({game.AcceptedPlayers.Count} из {_serviceConfiguration.PlayersPerTeam * 2}). \n" +
-                "Дальнейший сбор осуществляй вручную, используя команду - /addplayertogame. " +
-                $"Или отмени матч командой - /cancelgame. \nВ {deadlineTime.ToString(DateTimeHelper.DateFormat)} игра отменится автоматически";
+                $"Игра {game.DateTime.ToString(DateTimeHelper.DateFormat)} отменена";
 
             administrators.ForEach(x => _userInteractionService.SendMessage(message, x));
         }
 
-        private void NotifyPlayers(ICollection<TeamPlayer> players, Game game)
+        private void NotifyPlayers(Game game)
         {
-            foreach (var player in players)
+            var usersForNotify = game.AcceptedPlayers.Select(x => x.User)
+                .Concat(game.RequestedPlayers.Select(x => x.Player.User));
+            
+            var message =
+                $"Игра {game.DateTime.ToString(DateTimeHelper.DateFormat)} отменена";
+            
+            foreach (var user in usersForNotify)
             {
-                var message = $"Играем в {game.DateTime}. Ты в команде {player.TeamNumber}";
-                _userInteractionService.SendMessage(message, player.Player.User);
+                _userInteractionService.StopDialog(user);
+                _userInteractionService.SendMessage(message, user);
             }
         }
 
@@ -109,16 +124,6 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
             }
             administrators.ForEach(x => _userInteractionService.SendMessage(message, x));
             _scheduler.DeleteEvent<IGameScheduledEventMetadata>(x => x.GameId == game.Id);
-        }
-
-        private void DistributePlayersPerTeams(Game game)
-        {
-            var teams = GameHelper.GetTeams(game.AcceptedPlayers, _serviceConfiguration.PlayersPerTeam);
-            game.DistributedPlayers = teams.firstTeam
-                .Select(x => new TeamPlayer() {Id = Guid.NewGuid(), Player = x, TeamNumber = 1})
-                .Concat(
-                    teams.secondTeam.Select(x => new TeamPlayer() {Id = Guid.NewGuid(), Player = x, TeamNumber = 2}))
-                .ToList();
         }
     }
 }

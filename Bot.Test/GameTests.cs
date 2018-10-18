@@ -19,7 +19,7 @@ namespace Bot.Test
         {
             var times = new List<(TimeSpan, int)>();
             
-            times.Add((GenerateTime(2), 2));
+            times.Add((GenerateTime(1), 1));
             var count = Enumerable.Range(5, 7);
             foreach (var i in count)
             {
