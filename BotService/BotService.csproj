@@ -145,6 +145,7 @@
     <Compile Include="Mediator\Handlers\AuthorizeRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\BindUserToPlayerRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\AddPlayerToGameRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\PlayerStatusRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\CheckUniquePasswordHandler.cs" />
     <Compile Include="Mediator\Handlers\DummyHandlers\DummyMediatrHandler.cs" />
     <Compile Include="Mediator\Handlers\LogExceptionBehavior.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Mediator\Handlers\PlayerGameDecisionRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\CancelGameRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\ScheduleGameRequestHandler.cs" />
+    <Compile Include="Mediator\Requests\PlayerStatusRequest.cs" />
     <Compile Include="Mediator\Requests\AddPlayerToGameRequest.cs" />
     <Compile Include="Mediator\Requests\CancelGameRequest.cs" />
     <Compile Include="Mediator\Requests\PlayerGameDecisionRequest.cs" />

@@ -47,10 +47,8 @@ namespace BotService.Services
 
         public ECommandType? GetCommand(string message, BotUser user)
         {
-            if (_commands.ContainsKey(message))
+            if (_commands.ContainsKey(message) && user.Role >= _commands[message].MinimalAccessRole)
             {
-                if (user.Role < _commands[message].MinimalAccessRole)
-                    throw new UnauthorizedException();
                 return _commands[message].CommandType;
             }
 

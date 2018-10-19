@@ -70,6 +70,11 @@ namespace BotService.Services
                 communicator.SendMessage("У вас нет прав для выполнения этой команды");
                 _logger.Error(exception);
             }
+            catch (InvalidOperationException e)
+            {
+                communicator.SendMessage(e.Message);
+                _logger.Error(e);
+            }
             catch (Exception e)
             {
                 _logger.Error(e);
@@ -158,8 +163,15 @@ namespace BotService.Services
                         PlayerGameDeferedDecisionCommand(user, communicator, false);
                     }
                         break;
+                    case ECommandType.Status:
+                    {
+                        StatusCommand(user, communicator);
+                    }
+                        break;
                     default:
+                    {
                         throw new InvalidOperationException("Неизвестная команда");
+                    }
                 }
             }
         }
@@ -252,6 +264,14 @@ namespace BotService.Services
                     $"Список доступных команд:\n{string.Join("\n", commands.Select(x => $"{x.command} - {x.description}"))}");
             else
                 communicator.SendMessage("Нет доступных команд");
+        }
+        
+        private void StatusCommand(BotUser user, ICommunicator communicator)
+        {
+            var status = _mediator.Send(new PlayerStatusRequest() {UserId = user.Id}).Result;
+            var statusMessage = "Твой статус: " + (status ? "Активен" : "Неактивен") +
+                                ". Изменить статус можно с помощью команд - /active, /inactive";
+                communicator.SendMessage(statusMessage);
         }
 
         private void RegisterCommand(BotUser user, ICommunicator communicator)

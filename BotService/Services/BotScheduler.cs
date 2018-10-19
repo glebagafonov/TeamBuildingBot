@@ -22,11 +22,19 @@ namespace BotService.Services
 
         private async void EventHandler(object sender, ScheduleEventHandlerArgs args)
         {
-            var eventType = typeof(ScheduledEventRequest<>);
-            eventType = eventType.MakeGenericType(args.ScheduledEventMetadata.GetType());
-            var @event = (IRequest) Activator.CreateInstance(eventType, args.ScheduledEventMetadata);
-            await _mediator.Send(@event);
-            _logger.Trace($"ScheduledEventHappened: {args.ScheduledEventMetadata}");
+            try
+            {
+                var eventType = typeof(ScheduledEventRequest<>);
+                eventType = eventType.MakeGenericType(args.ScheduledEventMetadata.GetType());
+                var @event = (IRequest) Activator.CreateInstance(eventType, args.ScheduledEventMetadata);
+                await _mediator.Send(@event);
+                _logger.Trace($"ScheduledEventHappened: {args.ScheduledEventMetadata}");
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+            
         }
     }
 }
