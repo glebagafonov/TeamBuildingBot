@@ -138,6 +138,26 @@ namespace BotService.Services
                         ScheduleGameCommand(user, communicator);
                     }
                         break;
+                    case ECommandType.CancelGame:
+                    {
+                        CancelGameCommand(user, communicator);
+                    }
+                        break;
+                    case ECommandType.AddPlayerToGame:
+                    {
+                        AddPlayerToGameCommand(user, communicator);
+                    }
+                        break;
+                    case ECommandType.Accept:
+                    {
+                        PlayerGameDeferedDecisionCommand(user, communicator, true);
+                    }
+                        break;
+                    case ECommandType.Reject:
+                    {
+                        PlayerGameDeferedDecisionCommand(user, communicator, false);
+                    }
+                        break;
                     default:
                         throw new InvalidOperationException("Неизвестная команда");
                 }
@@ -179,6 +199,27 @@ namespace BotService.Services
                 foreach (var x in communicators)
                     x.SendMessage("Текущий диалог прерван.");
             }
+        }
+        
+        private void AddPlayerToGameCommand(BotUser user, ICommunicator communicator)
+        {
+            IDialog dialog = new AddPlayerToGameRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
+                new AddPlayerToGameRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository, _serviceConfiguration);
+            CreateDialog(dialog, user);
+        }
+        
+        private void PlayerGameDeferedDecisionCommand(BotUser user, ICommunicator communicator, bool decision)
+        {
+            IDialog dialog = new PlayerGameDeferedDecisionRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
+                new PlayerGameDecisionRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository, _serviceConfiguration, decision);
+            CreateDialog(dialog, user);
+        }
+        
+        private void CancelGameCommand(BotUser user, ICommunicator communicator)
+        {
+            IDialog dialog = new CancelGameRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
+                new CancelGameRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository, _serviceConfiguration);
+            CreateDialog(dialog, user);
         }
 
         private void ScheduleGameCommand(BotUser user, ICommunicator communicator)

@@ -10,7 +10,13 @@ namespace Bot.Domain.Enums
         ScheduleGame,
         CancelGame,
         Accept,
-        Reject
+        Reject,
+        AddPlayerToGame,
+        Inactive,
+        Active,
+        Status,
+        GameResult,
+        GameStatus
         
     }
 }

@@ -19,6 +19,6 @@ namespace BotService.Mediator.Requests
         {
             
         }
-        //public string Password   { get; set; }
+        public string Password   { get; set; }
     }
 }

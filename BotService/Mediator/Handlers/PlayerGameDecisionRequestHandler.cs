@@ -114,6 +114,7 @@ namespace BotService.Mediator.Handlers
 
         private static void AddPlayerToDeclinedPlayersList(Game game, Player player)
         {
+            game.AcceptedPlayers.RemoveAll(x => x.Id == player.Id);
             game.RequestedPlayers.RemoveAll(x => x.Player.Id == player.Id);
             game.RejectedPlayers.Add(player);
         }

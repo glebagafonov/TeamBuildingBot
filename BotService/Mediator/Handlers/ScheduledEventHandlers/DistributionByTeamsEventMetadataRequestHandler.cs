@@ -66,6 +66,7 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
                     NotifyAboutSuccessfulCollecting(game, game.DistributedPlayers, administrators);
                     NotifyPlayers(game.DistributedPlayers, game);
                 }
+                _scheduler.DeleteEvent<IGameScheduledEventMetadata>(x => x.GameId == game.Id && !(x is PlayerGameAcceptanceTimeoutEventMetadata));
 
                 _gameRepository.Save(game);
             }
@@ -108,7 +109,6 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
                 message += $"\n";
             }
             administrators.ForEach(x => _userInteractionService.SendMessage(message, x));
-            _scheduler.DeleteEvent<IGameScheduledEventMetadata>(x => x.GameId == game.Id);
         }
 
         private void DistributePlayersPerTeams(Game game)

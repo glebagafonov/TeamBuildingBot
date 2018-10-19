@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Services.Interfaces;
 using BotService.Mediator.Requests;
 using BotService.Model.Dialog;
@@ -62,16 +63,16 @@ namespace BotService.Model.Dialogs
                 registerRequestByTelegramAccount.LastName = message;
                 return registerRequestByTelegramAccount;
             });
-//            Add("Введи уникальный пароль");
-//            Add((message, registerRequestByTelegramAccount) =>
-//            {
-//                var task = _mediator.Send(new CheckUniquePassword(message));
-//                task.Wait();
-//                if(@task.Result)
-//                    throw new InvalidInputException("Такой пароль уже существует! Придумай свой уникальный пароль.");
-//                registerRequestByTelegramAccount.Password = message;
-//                return registerRequestByTelegramAccount;
-//            });
+            Add("Введи уникальный пароль");
+            Add((message, registerRequestByTelegramAccount) =>
+            {
+                var task = _mediator.Send(new CheckUniquePassword(message));
+                task.Wait();
+                if(@task.Result)
+                    throw new InvalidInputException("Такой пароль уже существует! Придумай свой уникальный пароль.");
+                registerRequestByTelegramAccount.Password = message;
+                return registerRequestByTelegramAccount;
+            });
             Add("Регистрация завершена");
         }
 

@@ -44,7 +44,8 @@ namespace BotService.Mediator.Handlers
                 _logger.Trace($"Schedule game at {request.DateTime}");
                 var game = new Game()
                 {
-                    DateTime = request.DateTime
+                    DateTime = request.DateTime,
+                    IsActive = true
                 };
                 game.MarkAsNew();
                 _gameRepository.Save(game);
