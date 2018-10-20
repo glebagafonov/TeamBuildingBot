@@ -34,6 +34,8 @@ namespace BotService.Mediator.Handlers
             using (_threadContextSessionProvider.CreateSessionScope())
             {
                 var game = _gameRepository.Get(request.GameId);
+                var notPlayedPlayers = _playerRepository.ListBySpecification(new UndeletedEntities<Player>())
+                    .Where(x => x.IsActive && game.AcceptedPlayers.All(y => y.User.Id != x.User.Id)).ToList();
                 game.ResultSet = true;
                 game.GoalDifference = request.GoalDifference;
                 game.TeamWinnerNumber = request.TeamWinningNumber;
@@ -49,7 +51,15 @@ namespace BotService.Mediator.Handlers
                         player.Player.SkillValue -= request.GoalDifference;
                     }
 
+                    player.Player.ParticipationRatio++;
+
                     _playerRepository.Save(player.Player);
+                }
+
+                foreach (var notPlayedPlayer in notPlayedPlayers)
+                {
+                    notPlayedPlayer.ParticipationRatio--;
+                    _playerRepository.Save(notPlayedPlayer);
                 }
                 
                 _gameRepository.Save(game);
