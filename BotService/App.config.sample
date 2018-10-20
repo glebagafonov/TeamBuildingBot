@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <configSections>
+        <section name="nlog" type="NLog.Config.ConfigSectionHandler, NLog" />
+    <!-- For more information on Entity Framework configuration, visit http://go.microsoft.com/fwlink/?LinkID=237468 --></configSections>
+    <connectionStrings>
+        <add name="systemDb" connectionString="Data Source=D:\sqlite\vagsfootball.db;Version=3;" />
+    </connectionStrings>
+    <startup useLegacyV2RuntimeActivationPolicy="true">
+        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1" />
+    </startup>
+    <appSettings>
+        <add key="telegramToken" value="-Your token-" />
+        <add key="startDayTime" value="9:00" />
+        <add key="endDayTime" value="22:00" />
+        <add key="firstInviteTime" value="04:00" />
+        <add key="inviteTime" value="02:00" />
+        <add key="gameScheduleThresholdHours" value="24:00" />
+    </appSettings>
+    <system.data>
+        <DbProviderFactories>
+        <remove invariant="System.Data.SQLite.EF6" /><add name="SQLite Data Provider (Entity Framework 6)" invariant="System.Data.SQLite.EF6" description=".NET Framework Data Provider for SQLite (Entity Framework 6)" type="System.Data.SQLite.EF6.SQLiteProviderFactory, System.Data.SQLite.EF6" /><remove invariant="System.Data.SQLite" /><add name="SQLite Data Provider" invariant="System.Data.SQLite" description=".NET Framework Data Provider for SQLite" type="System.Data.SQLite.SQLiteFactory, System.Data.SQLite" /></DbProviderFactories>
+    </system.data>
+    <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" throwExceptions="true">
+        <targets>
+            <!-- <default-wrapper xsi:type="AsyncWrapper"> -->
+            <!--     <wrapper-target xsi:type="BufferingWrapper" bufferSize="1" /> -->
+            <!-- </default-wrapper> -->
+            <target xsi:type="ColoredConsole" name="consoleLog" layout="${time} ${message} ${exception:innerFormat=Message,Type,Method,StackTrace:maxInnerExceptionLevel=10:innerExceptionSeparator=/:separator=,:format=Message,Type,Method,StackTrace}" useDefaultRowHighlightingRules="true">
+            </target>
+            <target xsi:type="File" name="fileLog" fileName="${appsetting:name=systemLogFolder:default=logs}/${shortdate}-${processname}.log">
+                <layout xsi:type="CSVLayout">
+                    <column name="time" layout="${longdate}" />
+                    <column name="level" layout="${level}" />
+                    <column name="logger" layout="${logger}" />
+                    <column name="message" layout="${message}" />
+                    <column name="exception-details" layout="${exception:innerFormat=Message,Type,Method,StackTrace:maxInnerExceptionLevel=10:innerExceptionSeparator=/:separator=,:format=Message,Type,Method,StackTrace}" />
+                </layout>
+            </target>
+            <!-- <target xsi:type="EventBus" name="eventBusLog"> -->
+            <!--     <layout xsi:type="SimpleLayout"> -->
+            <!--         <text>${longdate}|${message}|${exception:format=toString}</text> -->
+            <!--     </layout> -->
+            <!-- </target> -->
+        </targets>
+
+        <rules>
+            <logger name="fullLog" minlevel="Trace" writeTo="fileLog" />
+            <logger name="fullLog" minlevel="Trace" writeTo="consoleLog" />
+            <!-- <logger name="fullLog" minlevel="Trace" writeTo="eventBusLog" /> -->
+            <!-- <logger name="noEventBusLog" minlevel="Trace" writeTo="fileLog" /> -->
+            <!-- <logger name="noEventBusLog" minlevel="Trace" writeTo="consoleLog" /> -->
+        </rules>
+    </nlog>
+</configuration>
