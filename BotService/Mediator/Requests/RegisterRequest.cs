@@ -1,11 +1,7 @@
-using Bot.Domain.Entities;
-using Bot.Domain.Entities.Base;
-using Bot.Domain.Enums;
-using Bot.Infrastructure.Attributes;
 using BotService.Services.Interfaces;
 using MediatR;
 
-namespace BotService.Requests
+namespace BotService.Mediator.Requests
 {
     public class RegisterRequest : IRequest
     {
@@ -23,6 +19,6 @@ namespace BotService.Requests
         {
             
         }
-        //public string Password   { get; set; }
+        public string Password   { get; set; }
     }
 }

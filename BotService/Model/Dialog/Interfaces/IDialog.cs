@@ -10,8 +10,6 @@ namespace BotService.Model.Dialog.Interfaces
     public interface IDialog<TDialogData> : IDialog
         where TDialogData : class
     {
-        IDialog<TDialogData> Start(ICommunicator communicator, Guid userId, TDialogData dialogData);
-
         void Add(string message);
         void Add(MemoryStream imageStream);
         void Add(Func<string, TDialogData, TDialogData> action);
@@ -22,5 +20,6 @@ namespace BotService.Model.Dialog.Interfaces
         void ProcessMessage(string message, ICommunicator communicator);
         event CompleteEventHandler CompleteEvent;
         void ProcessDialogEnded();
+        IDialog Start();
     }
 }

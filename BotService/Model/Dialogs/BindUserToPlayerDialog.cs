@@ -8,8 +8,9 @@ using Bot.Infrastructure.Helpers;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services.Interfaces;
 using Bot.Infrastructure.Specifications;
+using BotService.Mediator.Requests;
 using BotService.Model.Dialog;
-using BotService.Requests;
+using BotService.Services.Interfaces;
 using MediatR;
 using NHibernate.Hql.Ast;
 
@@ -24,9 +25,9 @@ namespace BotService.Model.Dialogs
 
         private List<(int number, Guid userId, string Username)> _notBindedUsers;
 
-        public BindUserToPlayerDialog(ILogger logger, IMediator mediator,
+        public BindUserToPlayerDialog(IEnumerable<ICommunicator> communicators, Guid userId, BindUserToPlayerRequest dialogData,  ILogger logger, IMediator mediator,
             IThreadContextSessionProvider threadContextSessionProvider, IBotUserRepository botUserRepository,
-            IPlayerRepository playerRepository) : base(logger)
+            IPlayerRepository playerRepository) : base(logger, communicators, userId, dialogData)
         {
             _mediator                     = mediator;
             _threadContextSessionProvider = threadContextSessionProvider;

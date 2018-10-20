@@ -11,6 +11,11 @@
     </startup>
     <appSettings>
         <add key="telegramToken" value="-Your token-" />
+        <add key="startDayTime" value="9:00" />
+        <add key="endDayTime" value="22:00" />
+        <add key="firstInviteTime" value="04:00" />
+        <add key="inviteTime" value="02:00" />
+        <add key="gameScheduleThresholdHours" value="24:00" />
     </appSettings>
     <system.data>
         <DbProviderFactories>

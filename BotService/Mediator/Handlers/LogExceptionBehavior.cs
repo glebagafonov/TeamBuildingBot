@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Bot.Infrastructure.Services.Interfaces;
 using MediatR;
 
-namespace BotService.Handlers
+namespace BotService.Mediator.Handlers
 {
     public class LogExceptionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {

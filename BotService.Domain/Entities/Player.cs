@@ -6,5 +6,11 @@ namespace Bot.Domain.Entities
         public virtual int     SkillValue         { get; set; }
         public virtual int     ParticipationRatio { get; set; }
         public virtual bool    IsActive           { get; set; }
+        public virtual bool    IsGoalkeeper       { get; set; }
+
+        public Player()
+        {
+            IsGoalkeeper = false;
+        }
     }
 }

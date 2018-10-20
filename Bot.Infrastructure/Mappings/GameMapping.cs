@@ -11,12 +11,45 @@ namespace Bot.Infrastructure.Mappings
         {
             Table("`Game`");
             this.PropertyDateTime(x => x.DateTime);
+            this.Property(x => x.IsActive);
+            this.Property(x => x.ResultSet);
+            this.Property(x => x.TeamWinnerNumber);
+            this.Property(x => x.GoalDifference);
 
-            Set(x => x.Players, c =>
+
+            Set(x => x.SortedPlayersByRating, c =>
             {
                 c.Cascade(Cascade.All);
                 c.Key(k => k.Column("GameId"));
-                c.Table("Game_Player");
+                c.Table("Game_SortedPlayer");
+            }, r => r.ManyToMany(m => m.Column("PlayerId")));
+            
+            Set(x => x.AcceptedPlayers, c =>
+            {
+                c.Cascade(Cascade.All);
+                c.Key(k => k.Column("GameId"));
+                c.Table("Game_AcceptedPlayers");
+            }, r => r.ManyToMany(m => m.Column("PlayerId")));
+            
+            Set(x => x.RejectedPlayers, c =>
+            {
+                c.Cascade(Cascade.All);
+                c.Key(k => k.Column("GameId"));
+                c.Table("Game_RejectedPlayers");
+            }, r => r.ManyToMany(m => m.Column("PlayerId")));
+            
+            Set(x => x.RequestedPlayers, c =>
+            {
+                c.Cascade(Cascade.All);
+                c.Key(k => k.Column("GameId"));
+                c.Table("Game_PlayerEvent");
+            }, r => r.ManyToMany(m => m.Column("PlayerEventId")));
+            
+            Set(x => x.DistributedPlayers, c =>
+            {
+                c.Cascade(Cascade.All);
+                c.Key(k => k.Column("GameId"));
+                c.Table("Game_DistributedPlayers");
             }, r => r.ManyToMany(m => m.Column("PlayerId")));
         }
     }

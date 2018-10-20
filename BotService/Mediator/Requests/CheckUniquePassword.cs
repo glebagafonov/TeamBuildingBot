@@ -1,10 +1,6 @@
-using Bot.Domain.Entities;
-using Bot.Domain.Entities.Base;
-using Bot.Domain.Enums;
-using Bot.Infrastructure.Attributes;
 using MediatR;
 
-namespace BotService.Requests
+namespace BotService.Mediator.Requests
 {
     public class CheckUniquePassword : IRequest<bool>
     {

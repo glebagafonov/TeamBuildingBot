@@ -1,12 +1,14 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Bot.Domain.Entities;
 using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Repositories.Interfaces;
 using Bot.Infrastructure.Services.Interfaces;
+using BotService.Mediator.Requests;
 using BotService.Model.Dialog.Interfaces;
 using BotService.Model.Dialogs;
-using BotService.Requests;
 using BotService.Services.Interfaces;
 using MediatR;
 using Telegram.Bot;
@@ -18,11 +20,10 @@ namespace BotService.Services.TelegramServices
 {
     public class TelegramInteractionService
     {
-        private const string CancelCommand = "/cancel";
-        private readonly ILogger _logger;
-        private readonly IMediator _mediator;
+        private readonly ILogger                 _logger;
+        private readonly IMediator               _mediator;
         private readonly IUserInteractionService _userInteractionService;
-        private readonly ITelegramBotClient _client;
+        private readonly ITelegramBotClient      _client;
 
         public TelegramInteractionService(IServiceConfiguration serviceConfiguration,
             ILogger logger,
@@ -35,46 +36,67 @@ namespace BotService.Services.TelegramServices
             _client                 = new TelegramBotClient(serviceConfiguration.TelegramToken);
             _client.SetWebhookAsync("");
 
-            _client.OnMessage += Bot_OnMessage;
+            ProcessUnreadMessagesInStart();
+
             _client.StartReceiving();
         }
 
-        private async void Bot_OnMessage(object sender, MessageEventArgs messageEventArgs)
+        private async void ProcessUnreadMessagesInStart()
         {
-            var message = messageEventArgs.Message;
-
-
-            _logger.Info($"[{message.From.Id}]: Got message");
-            try
+            var updates     = _client.GetUpdatesAsync().Result;
+            var telegramIds = updates.Select(x => x.Message.From.Id).Distinct();
+            foreach (var telegramId in telegramIds)
             {
-                var communicator = GetCommunicator(message);
-                var user         = await _mediator.Send(new AuthorizeRequest(communicator));
+                await SendMessage(telegramId, "Я был выключен. Повтори команду.");
+            }
 
-                if (message.Type == MessageType.Text)
-                {
-                    _userInteractionService.ProcessMessage(user, GetCommunicator(message), message.Text);
-                }
-                else
-                {
-                    await SendMessage(new ChatId(message.Chat.Id), "Я понимаю только текст!", message.MessageId);
-                }
-            }
-            catch (Exception exception)
+            _client.OnMessage += Bot_OnMessage;
+        }
+
+        private void Bot_OnMessage(object sender, MessageEventArgs messageEventArgs)
+        {
+            Task.Run(async () =>
             {
-                _logger.Error(exception);
-            }
+                try
+                {
+                    var message = messageEventArgs.Message;
+                    _logger.Info($"[{message.From.Id}]: Got message");
+
+                    var communicator = GetCommunicator(message);
+                    var user         = await _mediator.Send(new AuthorizeRequest(communicator));
+
+                    if (message.Type == MessageType.Text)
+                    {
+                        _userInteractionService.ProcessMessage(user, GetCommunicator(message), message.Text);
+                    }
+                    else
+                    {
+                        await SendMessage(message.Chat.Id, "Я понимаю только текст!", message.MessageId);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _logger.Error(exception);
+                }
+            });
+        }
+
+        public TelegramCommunicator GetCommunicator(TelegramAccount account)
+        {
+            return new TelegramCommunicator(account.TelegramId, this);
         }
 
         private TelegramCommunicator GetCommunicator(Message message)
         {
-            return new TelegramCommunicator(message.Chat.Id, message.From.Id, this);
+            return new TelegramCommunicator(message.From.Id, this);
         }
 
-        public async Task SendMessage(ChatId chat, string text, int? messageId = 0)
+        public async Task SendMessage(long telegramId, string text, int? messageId = 0)
         {
-            await _client.SendTextMessageAsync(chat, text, replyToMessageId: messageId ?? 0);
+            _logger.Trace($"[{telegramId}]: Send message");
+            await _client.SendTextMessageAsync(telegramId, text, replyToMessageId: messageId ?? 0);
         }
-        
+
         public async Task SendImage(ChatId chat, MemoryStream stream, int? messageId = 0)
         {
             stream.Position = 0;

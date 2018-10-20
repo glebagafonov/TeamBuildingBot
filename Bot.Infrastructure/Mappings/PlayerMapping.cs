@@ -13,6 +13,7 @@ namespace Bot.Infrastructure.Mappings
             Table("`Player`");
             this.Property(x => x.ParticipationRatio);
             this.Property(x => x.SkillValue);
+            this.Property(x => x.IsActive);
             ManyToOne(x => x.User, c =>
             {
                 c.Cascade(Cascade.None);
