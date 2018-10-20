@@ -12,6 +12,10 @@ namespace Bot.Infrastructure.Mappings
             Table("`Game`");
             this.PropertyDateTime(x => x.DateTime);
             this.Property(x => x.IsActive);
+            this.Property(x => x.ResultSet);
+            this.Property(x => x.TeamWinnerNumber);
+            this.Property(x => x.GoalDifference);
+
 
             Set(x => x.SortedPlayersByRating, c =>
             {

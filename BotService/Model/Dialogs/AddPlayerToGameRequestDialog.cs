@@ -68,7 +68,7 @@ namespace BotService.Model.Dialogs
 
                     Add((message, data) =>
                     {
-                        if (!int.TryParse(message, out var number) || (number < 0 && number > 100))
+                        if (!int.TryParse(message, out var number) || (number < 1 && number > games.Count()))
                         {
                             throw new InvalidInputException($"Введи номер игры от 1 до {games.Count()}");
                         }
@@ -103,7 +103,7 @@ namespace BotService.Model.Dialogs
                     var numbers       = new List<int>();
                     foreach (var stringNumber in stringNumbers)
                     {
-                        if (!int.TryParse(stringNumber, out var number) || (number < 0 && number > 100))
+                        if (!int.TryParse(stringNumber, out var number) || (number < 1 && number > playersForAdd.Count))
                         {
                             throw new InvalidInputException(
                                 $"Не распознал {stringNumber}. Введи номера через запятую без пробела, например \"1,3,2\"");

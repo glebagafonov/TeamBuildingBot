@@ -47,7 +47,7 @@ namespace BotService.Services.TelegramServices
             var telegramIds = updates.Select(x => x.Message.From.Id).Distinct();
             foreach (var telegramId in telegramIds)
             {
-                await SendMessage(telegramId, "Я был выключен. Повтори команду");
+                await SendMessage(telegramId, "Я был выключен. Повтори команду.");
             }
 
             _client.OnMessage += Bot_OnMessage;

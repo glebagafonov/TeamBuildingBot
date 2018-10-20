@@ -122,7 +122,7 @@ namespace BotService.Services
                             "Нет диалога для отмены. Введи команду. Если нужна помошь воспользуйся командой - /help");
                     }
                         break;
-                    case ECommandType.Help:
+                    case ECommandType.Commands:
                     {
                         HelpCommand(user, communicator);
                     }
@@ -168,6 +168,26 @@ namespace BotService.Services
                         StatusCommand(user, communicator);
                     }
                         break;
+                    case ECommandType.Active:
+                    {
+                        ActiveCommand(user, communicator);
+                    }
+                        break;
+                    case ECommandType.Inactive:
+                    {
+                        InactiveCommand(user, communicator);
+                    }
+                        break;
+                    case ECommandType.NextGameStatus:
+                    {
+                        NextGameStatusCommand(user, communicator);
+                    }
+                        break;
+                    case ECommandType.GameResult:
+                    {
+                        SetGameResultDialog(user, communicator);
+                    }
+                        break;
                     default:
                     {
                         throw new InvalidOperationException("Неизвестная команда");
@@ -211,6 +231,13 @@ namespace BotService.Services
                 foreach (var x in communicators)
                     x.SendMessage("Текущий диалог прерван.");
             }
+        }
+        
+        private void SetGameResultDialog(BotUser user, ICommunicator communicator)
+        {
+            IDialog dialog = new SetGameResultRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
+                new SetGameResultRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository);
+            CreateDialog(dialog, user);
         }
         
         private void AddPlayerToGameCommand(BotUser user, ICommunicator communicator)
@@ -272,6 +299,26 @@ namespace BotService.Services
             var statusMessage = "Твой статус: " + (status ? "Активен" : "Неактивен") +
                                 ". Изменить статус можно с помощью команд - /active, /inactive";
                 communicator.SendMessage(statusMessage);
+        }
+        
+        private void ActiveCommand(BotUser user, ICommunicator communicator)
+        {
+            _mediator.Send(new ChangePlayerStateRequest() {IsActive = true, UserId = user.Id}).Wait();
+            var statusMessage = "Установлен статус - активен";
+            communicator.SendMessage(statusMessage);
+        }
+        
+        private void InactiveCommand(BotUser user, ICommunicator communicator)
+        {
+            _mediator.Send(new ChangePlayerStateRequest() {IsActive = false, UserId = user.Id}).Wait();
+            var statusMessage = "Установлен статус - неактивен";
+            communicator.SendMessage(statusMessage);
+        }
+        
+        private void NextGameStatusCommand(BotUser user, ICommunicator communicator)
+        {
+            var statusMessage = _mediator.Send(new NextGameStatusRequest()).Result;
+            communicator.SendMessage(statusMessage);
         }
 
         private void RegisterCommand(BotUser user, ICommunicator communicator)

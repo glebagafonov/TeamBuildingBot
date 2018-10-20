@@ -13,8 +13,6 @@ namespace BotService.Mediator.Handlers
 {
     public class ScheduleGameRequestHandler : IRequestHandler<ScheduleGameRequest>
     {
-        private const int MaxUsersCount = 500;
-
         private readonly ILogger                       _logger;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
         private readonly IBotUserRepository            _botUserRepository;

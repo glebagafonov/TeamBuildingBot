@@ -56,7 +56,7 @@ namespace BotService.Model.Dialogs
 
         
 
-        protected override string CommandName => "Вопрос по участию";
+        protected override string CommandName => "Решение по игре";
         public override void ProcessDialogEnded()
         {
             _mediator.Send(DialogData);

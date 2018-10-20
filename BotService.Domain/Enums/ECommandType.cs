@@ -16,7 +16,8 @@ namespace Bot.Domain.Enums
         Active,
         Status,
         GameResult,
-        GameStatus
+        NextGameStatus,
+        Commands
         
     }
 }

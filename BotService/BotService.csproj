@@ -145,6 +145,8 @@
     <Compile Include="Mediator\Handlers\AuthorizeRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\BindUserToPlayerRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\AddPlayerToGameRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\SetGameResultRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\GameRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\PlayerStatusRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\CheckUniquePasswordHandler.cs" />
     <Compile Include="Mediator\Handlers\DummyHandlers\DummyMediatrHandler.cs" />
@@ -156,7 +158,11 @@
     <Compile Include="Mediator\Handlers\ScheduledEventHandlers\PrimaryCollectingEventMetadataRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\PlayerGameDecisionRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\CancelGameRequestHandler.cs" />
+    <Compile Include="Mediator\Handlers\ChangePlayerStateRequest.cs" />
     <Compile Include="Mediator\Handlers\ScheduleGameRequestHandler.cs" />
+    <Compile Include="Mediator\Requests\NextGameStatusRequest.cs" />
+    <Compile Include="Mediator\Requests\ChangePlayerStateRequest.cs" />
+    <Compile Include="Mediator\Requests\SetGameResultRequest.cs" />
     <Compile Include="Mediator\Requests\PlayerStatusRequest.cs" />
     <Compile Include="Mediator\Requests\AddPlayerToGameRequest.cs" />
     <Compile Include="Mediator\Requests\CancelGameRequest.cs" />
@@ -172,6 +178,7 @@
     <Compile Include="Model\ActionContext.cs" />
     <Compile Include="Model\Dialogs\BindUserToPlayerDialog.cs" />
     <Compile Include="Model\Dialogs\AddPlayerToGameRequestDialog.cs" />
+    <Compile Include="Model\Dialogs\SetGameResultRequestDialog.cs" />
     <Compile Include="Model\Dialogs\PlayerGameDefferedDecisionRequestDialog.cs" />
     <Compile Include="Model\Dialogs\CancelGameRequestDialog.cs" />
     <Compile Include="Model\Dialogs\PlayerGameDecisionRequestDialog.cs" />

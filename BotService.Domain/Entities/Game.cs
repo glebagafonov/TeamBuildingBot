@@ -12,6 +12,9 @@ namespace Bot.Domain.Entities
         public virtual ICollection<Player>       RejectedPlayers       { get; set; }
         public virtual ICollection<TeamPlayer>   DistributedPlayers    { get; set; }
         public virtual bool                      IsActive              { get; set; }
+        public virtual bool                      ResultSet             { get; set; }
+        public virtual int                       GoalDifference        { get; set; }
+        public virtual int                       TeamWinnerNumber      { get; set; }
 
 
         public Game()
