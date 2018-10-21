@@ -23,6 +23,7 @@ using BotService.Model.SchedulerMetadatas;
 using BotService.Services;
 using BotService.Services.Interfaces;
 using BotService.Services.TelegramServices;
+using BotService.Services.VkInteraction;
 using MediatR;
 using Ninject;
 using Telegram.Bot;
@@ -74,8 +75,9 @@ namespace BotService
 
         protected override void OnStart(string[] args)
         {
-            ServiceLocator.Get<TelegramInteractionService>();
             ServiceLocator.Get<IScheduler>();
+            ServiceLocator.Get<VkInteractionService>();
+            ServiceLocator.Get<TelegramInteractionService>();
         }
 
         private static void CreateKernel()

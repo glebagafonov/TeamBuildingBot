@@ -60,12 +60,28 @@
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.8.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a">
+      <HintPath>..\packages\HtmlAgilityPack.1.8.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Iesi.Collections, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4">
       <HintPath>..\packages\Iesi.Collections.4.0.4\lib\net461\Iesi.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MediatR, Version=5.1.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\MediatR.5.1.0\lib\net45\MediatR.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=2.1.0.0, Culture=neutral, PublicKeyToken=8df3f1eee85cc956">
+      <HintPath>..\packages\NetFx.Extensions.DependencyInjection.2.1.1\lib\net451\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=8df3f1eee85cc956">
+      <HintPath>..\packages\NetFx.Extensions.DependencyInjection.Abstractions.2.1.1\lib\net451\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=8df3f1eee85cc956">
+      <HintPath>..\packages\NetFx.Extensions.Logging.Abstractions.2.1.1\lib\net451\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -115,6 +131,26 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
@@ -125,11 +161,14 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
     <Reference Include="Telegram.Bot, Version=14.10.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\Telegram.Bot.14.10.0\lib\net45\Telegram.Bot.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VkNet, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\VkNet.1.38.0\lib\net45\VkNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -142,6 +181,7 @@
     </Compile>
     <Compile Include="Extensions\PlayersExtension.cs" />
     <Compile Include="Mediator\Handlers\AuthorizationBehavior.cs" />
+    <Compile Include="Mediator\Handlers\AuthorizeNewAccountRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\AuthorizeRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\BindUserToPlayerRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\AddPlayerToGameRequestHandler.cs" />
@@ -160,6 +200,7 @@
     <Compile Include="Mediator\Handlers\CancelGameRequestHandler.cs" />
     <Compile Include="Mediator\Handlers\ChangePlayerStateRequest.cs" />
     <Compile Include="Mediator\Handlers\ScheduleGameRequestHandler.cs" />
+    <Compile Include="Mediator\Requests\AuthorizeNewAccountRequest.cs" />
     <Compile Include="Mediator\Requests\NextGameStatusRequest.cs" />
     <Compile Include="Mediator\Requests\ChangePlayerStateRequest.cs" />
     <Compile Include="Mediator\Requests\SetGameResultRequest.cs" />
@@ -224,6 +265,9 @@
     <Compile Include="Services\TelegramServices\TelegramInteractionService.cs" />
     <Compile Include="Services\DialogStorage.cs" />
     <Compile Include="Services\UserInteractionService.cs" />
+    <Compile Include="Services\VkInteraction\VkCommunicator.cs" />
+    <Compile Include="Services\VkInteraction\VkInteractionService.cs" />
+    <Compile Include="Services\VkInteraction\VkLongPollingException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

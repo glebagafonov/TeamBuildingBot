@@ -67,7 +67,7 @@ namespace BotService.Services.TelegramServices
 
                     if (message.Type == MessageType.Text)
                     {
-                        _userInteractionService.ProcessMessage(user, GetCommunicator(message), message.Text);
+                        _userInteractionService.ProcessMessage(user, communicator, message.Text);
                     }
                     else
                     {
@@ -93,7 +93,7 @@ namespace BotService.Services.TelegramServices
 
         public async Task SendMessage(long telegramId, string text, int? messageId = 0)
         {
-            _logger.Trace($"[{telegramId}]: Send message");
+            _logger.Trace($"[{telegramId}]: Telegram: Send message");
             await _client.SendTextMessageAsync(telegramId, text, replyToMessageId: messageId ?? 0);
         }
 

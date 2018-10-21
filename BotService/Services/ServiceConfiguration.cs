@@ -10,6 +10,8 @@ namespace BotService.Services
     {
         public string TelegramToken => ConfigurationManager.AppSettings["telegramToken"];
 
+        public string VkToken => ConfigurationManager.AppSettings["vkToken"];
+
         public TimeSpan StartDayTime => new TimeSpan(int.Parse(ConfigurationManager.AppSettings["startDayTime"].Split(':')[0]),
             int.Parse(ConfigurationManager.AppSettings["startDayTime"].Split(':')[1]),  0);
 

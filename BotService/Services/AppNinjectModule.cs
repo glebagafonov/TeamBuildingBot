@@ -19,6 +19,7 @@ using BotService.Ninject;
 using BotService.Providers;
 using BotService.Services.Interfaces;
 using BotService.Services.TelegramServices;
+using BotService.Services.VkInteraction;
 using MediatR;
 using MediatR.Pipeline;
 using NHibernate;
@@ -122,6 +123,10 @@ namespace BotService.Services
             
             Bind<ICommunicatorFactory>()
                 .To<CommunicatorFactory>()
+                .InSingletonScope();
+
+            Bind<VkInteractionService>()
+                .ToSelf()
                 .InSingletonScope();
 
             Bind<TelegramInteractionService>()

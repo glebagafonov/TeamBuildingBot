@@ -12,15 +12,16 @@ using Bot.Infrastructure.Specifications;
 using BotService.Mediator.Requests;
 using BotService.Services.Interfaces;
 using BotService.Services.TelegramServices;
+using BotService.Services.VkInteraction;
 using MediatR;
 
 namespace BotService.Mediator.Handlers
 {
     public class AuthorizeRequestHandler : IRequestHandler<AuthorizeRequest, BotUser>
     {
-        private readonly ILogger _logger;
+        private readonly ILogger                       _logger;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
-        private readonly IBotUserRepository _botUserRepository;
+        private readonly IBotUserRepository            _botUserRepository;
 
         public AuthorizeRequestHandler(ILogger logger,
             IThreadContextSessionProvider threadContextSessionProvider, IBotUserRepository botUserRepository)
@@ -36,22 +37,20 @@ namespace BotService.Mediator.Handlers
             {
                 var user = GetUserByCommunicator(request.Communicator,
                     _botUserRepository.ListBySpecification(new UndeletedEntities<BotUser>()));
-                
+
                 if (user == null)
                 {
                     user = new BotUser()
-                           {
-                               Id           = Guid.NewGuid(),
-                               Role         = EUserRole.UnregisteredUser,
-                               UserAccounts = new List<BaseAccount>(),
-                              // PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
-                           };
+                    {
+                        Id           = Guid.NewGuid(),
+                        Role         = EUserRole.UnregisteredUser
+                    };
                     user.UserAccounts.Add(GetAccount(request.Communicator, user));
-                    
+
                     _logger.Info("User added");
                     _botUserRepository.Save(user);
                 }
-                
+
                 return Task.FromResult(user);
             }
         }
@@ -60,15 +59,22 @@ namespace BotService.Mediator.Handlers
         {
             switch (communicator)
             {
-                    case TelegramCommunicator telegramCommunicator:
-                        return new TelegramAccount()
-                               {
-                                   Id         = Guid.NewGuid(),
-                                   TelegramId = telegramCommunicator.TelegramId,
-                                   User       = user 
-                               };
-                    default:
-                        throw new InvalidOperationException();
+                case TelegramCommunicator telegramCommunicator:
+                    return new TelegramAccount()
+                    {
+                        Id         = Guid.NewGuid(),
+                        TelegramId = telegramCommunicator.TelegramId,
+                        User       = user
+                    };
+                case VkCommunicator vkCommunicator:
+                    return new VkAccount()
+                    {
+                        Id   = Guid.NewGuid(),
+                        VkId = vkCommunicator.VkId,
+                        User = user
+                    };
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -80,7 +86,12 @@ namespace BotService.Mediator.Handlers
                     return users
                         .FirstOrDefault(x =>
                             x.UserAccounts.Any(
-                                y => y is TelegramAccount account && account.TelegramId == telegramCommunicator.TelegramId));
+                                y => y is TelegramAccount account &&
+                                     account.TelegramId == telegramCommunicator.TelegramId));
+                case VkCommunicator vkCommunicator:
+                    return users.FirstOrDefault(x =>
+                        x.UserAccounts.Any(
+                            y => y is VkAccount account && account.VkId == vkCommunicator.VkId));
                 default:
                     throw new InvalidOperationException();
             }
