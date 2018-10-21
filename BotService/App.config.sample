@@ -11,6 +11,7 @@
     </startup>
     <appSettings>
         <add key="telegramToken" value="-Your token-" />
+        <add key="vkToken" value="-Your token-" />
         <add key="startDayTime" value="9:00" />
         <add key="endDayTime" value="22:00" />
         <add key="firstInviteTime" value="04:00" />

@@ -29,7 +29,7 @@ namespace BotService.Mediator.Handlers
             using (_threadContextSessionProvider.CreateSessionScope())
             {
                 return Task.FromResult(_botUserRepository.ListBySpecification(new UndeletedEntities<BotUser>())
-                    .Any(x => BCrypt.Net.BCrypt.Verify(request.Password, x.PasswordHash)));
+                    .Any(x => !string.IsNullOrEmpty(x.PasswordHash) && BCrypt.Net.BCrypt.Verify(request.Password, x.PasswordHash)));
             }
         }
     }

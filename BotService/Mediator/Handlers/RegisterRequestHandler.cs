@@ -52,7 +52,7 @@ namespace BotService.Mediator.Handlers
                                LastName     = request.LastName,
                                Role         = EUserRole.User,
                                UserAccounts = new List<BaseAccount>(),
-                              // PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
+                               PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
                            };
                     user.UserAccounts.Add(GetAccount(request.Communicator, user));
                     
@@ -64,7 +64,7 @@ namespace BotService.Mediator.Handlers
                     user.LastName = request.LastName;
                     if (user.Role == EUserRole.UnregisteredUser)
                         user.Role = EUserRole.User;
-                    //user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
                     _logger.Info("User updated");
                 }
 

@@ -4,6 +4,6 @@ namespace Bot.Domain.Entities
 {
     public class VkAccount : BaseAccount
     {
-        public virtual int VkId { get; set; }
+        public virtual long VkId { get; set; }
     }
 }

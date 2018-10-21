@@ -22,7 +22,7 @@ namespace Bot.Infrastructure.Mappings
             }, r => r.ManyToMany(m => m.Column("AccountId")));
             
             
-            //this.PropertyString(x => x.PasswordHash);
+            this.PropertyString(x => x.PasswordHash);
         }
     }
 }
