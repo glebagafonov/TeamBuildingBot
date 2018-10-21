@@ -18,6 +18,7 @@ namespace BotService.Services
         public void Initialize()
         {
             Add("/commands",        ECommandType.Commands,        EUserRole.UnregisteredUser, "Список доступных команд");
+            Add("/help",            ECommandType.Help,            EUserRole.UnregisteredUser, "Помощь");
             
             Add("/register",        ECommandType.Register,        EUserRole.UnregisteredUser, "Регистрация");
             Add("/cancel",          ECommandType.Cancel,          EUserRole.UnregisteredUser, "Отмена диалога");

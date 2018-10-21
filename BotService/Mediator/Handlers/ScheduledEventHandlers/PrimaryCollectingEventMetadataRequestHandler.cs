@@ -81,7 +81,7 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
                                                                PlayerId = requestedPlayer.Player.Id
                                                            };
             _scheduler.AddEvent(playerGameAcceptanceTimeoutEventMetadata, timeoutTime);
-
+            
             _userInteractionService.StartGameConfirmationDialog(requestedPlayer.Player, requestedPlayer.Player.User.UserAccounts.Select(x => _communicatorFactory.GetCommunicator(x)).ToList(), gameId);
             
             return new PlayerEvent() { Id = Guid.NewGuid(), EventTime = timeoutTime, Player = requestedPlayer.Player};

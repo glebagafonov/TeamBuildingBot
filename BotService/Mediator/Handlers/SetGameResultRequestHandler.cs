@@ -38,6 +38,7 @@ namespace BotService.Mediator.Handlers
                 var notPlayedPlayers = _playerRepository.ListBySpecification(new UndeletedEntities<Player>())
                     .Where(x => x.IsActive && game.AcceptedPlayers.All(y => y.User.Id != x.User.Id)).ToList();
                 game.ResultSet = true;
+                game.IsActive = false;
                 game.GoalDifference = request.GoalDifference;
                 game.TeamWinnerNumber = request.TeamWinningNumber;
 
@@ -74,12 +75,16 @@ namespace BotService.Mediator.Handlers
         {
             foreach (var notPlayedPlayer in notPlayedPlayers)
             {
-                notPlayedPlayer.ParticipationRatio--;
-                if (notPlayedPlayer.ParticipationRatio < 0)
+                if (notPlayedPlayer.IsActive)
                 {
-                    notPlayedPlayer.ParticipationRatio = 0;
+                    notPlayedPlayer.ParticipationRatio--;
+                    if (notPlayedPlayer.ParticipationRatio < 0)
+                    {
+                        notPlayedPlayer.ParticipationRatio = 0;
+                    }
+
+                    _playerRepository.Save(notPlayedPlayer);
                 }
-                _playerRepository.Save(notPlayedPlayer);
             }
         }
     }

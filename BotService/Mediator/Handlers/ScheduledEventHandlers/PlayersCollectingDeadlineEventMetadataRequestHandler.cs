@@ -29,23 +29,17 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
         private readonly IServiceConfiguration _serviceConfiguration;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
         private readonly IGameRepository _gameRepository;
-        private readonly IScheduler _scheduler;
-        private readonly IUserInteractionService _userInteractionService;
 
         public PlayersCollectingDeadlineEventMetadataRequestHandler(
             IMediator mediator,
             IServiceConfiguration serviceConfiguration,
             IThreadContextSessionProvider threadContextSessionProvider,
-            IGameRepository gameRepository,
-            IScheduler scheduler,
-            IUserInteractionService userInteractionService)
+            IGameRepository gameRepository)
         {
             _mediator                     = mediator;
             _serviceConfiguration         = serviceConfiguration;
             _threadContextSessionProvider = threadContextSessionProvider;
             _gameRepository               = gameRepository;
-            _scheduler                    = scheduler;
-            _userInteractionService       = userInteractionService;
         }
 
         public Task<Unit> Handle(ScheduledEventRequest<PlayersCollectingDeadlineEventMetadata> message,
@@ -62,32 +56,14 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
                 else
                 {
                     _mediator.Send(
-                        new ScheduledEventRequest<PlayersCollectingDeadlineEventMetadata>(
-                            new PlayersCollectingDeadlineEventMetadata() {GameId = game.Id}), cancellationToken);
+                        new ScheduledEventRequest<DistributionByTeamsEventMetadata>(
+                            new DistributionByTeamsEventMetadata() {GameId = game.Id}), cancellationToken);
                 }
 
                 _gameRepository.Save(game);
             }
 
             return Task.FromResult(Unit.Value);
-        }
-
-
-        private void NotifyAboutSuccessfulCollecting(Game game, ICollection<TeamPlayer> distributedPlayers,
-            List<BotUser> administrators)
-        {
-            var message = $"Игра {game.DateTime.ToString(DateTimeHelper.DateFormat)}.\n";
-            foreach (var team in distributedPlayers.GroupBy(x => x.TeamNumber))
-            {
-                message += $"\nКоманда {team.First().TeamNumber}\n";
-                foreach (var x in team.Select((value, i) => new {i, value}))
-                    message +=
-                        $"{(x.i + 1).ToString()}. {x.value.Player.User.FirstName} {x.value.Player.User.LastName}";
-                message += $"\n";
-            }
-
-            administrators.ForEach(x => _userInteractionService.SendMessage(message, x));
-            _scheduler.DeleteEvent<IGameScheduledEventMetadata>(x => x.GameId == game.Id);
         }
     }
 }

@@ -255,6 +255,7 @@
     <Compile Include="Services\BotServiceSessionFactory.cs" />
     <Compile Include="Services\CommandFactory.cs" />
     <Compile Include="Services\CommunicatorFactory.cs" />
+    <Compile Include="Services\Instruction.cs" />
     <Compile Include="Services\Interfaces\IBotCommandsProcessor.cs" />
     <Compile Include="Services\Interfaces\ICommunicator.cs" />
     <Compile Include="Services\Interfaces\ICommunicatorFactory.cs" />

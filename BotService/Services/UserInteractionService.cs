@@ -19,15 +19,15 @@ namespace BotService.Services
 {
     public class UserInteractionService : IUserInteractionService
     {
-        private readonly IBotUserRepository _botUserRepository;
-        private readonly CommandFactory _commandFactory;
-        private readonly IDialogStorage _dialogStorage;
-        private readonly ILogger _logger;
-        private readonly IMediator _mediator;
-        private readonly IPlayerRepository _playerRepository;
-        private readonly IServiceConfiguration _serviceConfiguration;
-        private readonly IGameRepository _gameRepository;
-        private readonly ICommunicatorFactory _communicatorFactory;
+        private readonly IBotUserRepository            _botUserRepository;
+        private readonly CommandFactory                _commandFactory;
+        private readonly IDialogStorage                _dialogStorage;
+        private readonly ILogger                       _logger;
+        private readonly IMediator                     _mediator;
+        private readonly IPlayerRepository             _playerRepository;
+        private readonly IServiceConfiguration         _serviceConfiguration;
+        private readonly IGameRepository               _gameRepository;
+        private readonly ICommunicatorFactory          _communicatorFactory;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
 
         public UserInteractionService(
@@ -51,8 +51,8 @@ namespace BotService.Services
             _botUserRepository            = botUserRepository;
             _playerRepository             = playerRepository;
             _serviceConfiguration         = serviceConfiguration;
-            _gameRepository = gameRepository;
-            _communicatorFactory = communicatorFactory;
+            _gameRepository               = gameRepository;
+            _communicatorFactory          = communicatorFactory;
         }
 
         public void ProcessMessage(BotUser user, ICommunicator communicator, string message)
@@ -123,6 +123,11 @@ namespace BotService.Services
                     }
                         break;
                     case ECommandType.Commands:
+                    {
+                        CommandsCommand(user, communicator);
+                    }
+                        break;
+                    case ECommandType.Help:
                     {
                         HelpCommand(user, communicator);
                     }
@@ -231,54 +236,59 @@ namespace BotService.Services
                     x.SendMessage("Текущий диалог прерван.");
             }
         }
-        
+
         private void SetGameResultDialog(BotUser user, ICommunicator communicator)
         {
-            IDialog dialog = new SetGameResultRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
+            IDialog dialog = new SetGameResultRequestDialog(new List<ICommunicator>() {communicator}, user.Id,
                 new SetGameResultRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository);
             CreateDialog(dialog, user);
         }
-        
+
         private void AddPlayerToGameCommand(BotUser user, ICommunicator communicator)
         {
-            IDialog dialog = new AddPlayerToGameRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
-                new AddPlayerToGameRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository, _serviceConfiguration);
+            IDialog dialog = new AddPlayerToGameRequestDialog(new List<ICommunicator>() {communicator}, user.Id,
+                new AddPlayerToGameRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository,
+                _serviceConfiguration);
             CreateDialog(dialog, user);
         }
-        
+
         private void PlayerGameDeferedDecisionCommand(BotUser user, ICommunicator communicator, bool decision)
         {
-            IDialog dialog = new PlayerGameDeferedDecisionRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
-                new PlayerGameDecisionRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository, _serviceConfiguration, decision);
+            IDialog dialog = new PlayerGameDeferedDecisionRequestDialog(new List<ICommunicator>() {communicator},
+                user.Id,
+                new PlayerGameDecisionRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository,
+                _serviceConfiguration, decision);
             CreateDialog(dialog, user);
         }
-        
+
         private void AuthorizeNewAccountCommand(BotUser user, ICommunicator communicator)
         {
-            IDialog dialog = new AuthorizeNewAccountRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
+            IDialog dialog = new AuthorizeNewAccountRequestDialog(new List<ICommunicator>() {communicator}, user.Id,
                 new AuthorizeNewAccountRequest(), _logger, _mediator);
             CreateDialog(dialog, user);
         }
-        
+
         private void CancelGameCommand(BotUser user, ICommunicator communicator)
         {
-            IDialog dialog = new CancelGameRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
-                new CancelGameRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository, _serviceConfiguration);
+            IDialog dialog = new CancelGameRequestDialog(new List<ICommunicator>() {communicator}, user.Id,
+                new CancelGameRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository,
+                _serviceConfiguration);
             CreateDialog(dialog, user);
         }
 
         private void ScheduleGameCommand(BotUser user, ICommunicator communicator)
         {
-            IDialog dialog = new ScheduleGameRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
+            IDialog dialog = new ScheduleGameRequestDialog(new List<ICommunicator>() {communicator}, user.Id,
                 new ScheduleGameRequest(communicator), _logger, _mediator, _serviceConfiguration);
             CreateDialog(dialog, user);
         }
 
         private void BindUserCommand(BotUser user, ICommunicator communicator)
         {
-            IDialog dialog = new BindUserToPlayerDialog(new List<ICommunicator>(){communicator}, user.Id, new BindUserToPlayerRequest(), _logger,
-                    _mediator, _threadContextSessionProvider,
-                    _botUserRepository, _playerRepository);
+            IDialog dialog = new BindUserToPlayerDialog(new List<ICommunicator>() {communicator}, user.Id,
+                new BindUserToPlayerRequest(), _logger,
+                _mediator, _threadContextSessionProvider,
+                _botUserRepository, _playerRepository);
             CreateDialog(dialog, user);
         }
 
@@ -289,7 +299,7 @@ namespace BotService.Services
             dialog.Start();
         }
 
-        private void HelpCommand(BotUser user, ICommunicator communicator)
+        private void CommandsCommand(BotUser user, ICommunicator communicator)
         {
             var commands = _commandFactory.GetCommandsForUser(user);
             if (commands.Count > 0)
@@ -298,29 +308,34 @@ namespace BotService.Services
             else
                 communicator.SendMessage("Нет доступных команд");
         }
-        
+
+        private void HelpCommand(BotUser user, ICommunicator communicator)
+        {
+            communicator.SendMessage(Instruction.GetInstruction);
+        }
+
         private void StatusCommand(BotUser user, ICommunicator communicator)
         {
             var status = _mediator.Send(new PlayerStatusRequest() {UserId = user.Id}).Result;
             var statusMessage = "Твой статус: " + (status ? "Активен" : "Неактивен") +
                                 ". Изменить статус можно с помощью команд - /active, /inactive";
-                communicator.SendMessage(statusMessage);
+            communicator.SendMessage(statusMessage);
         }
-        
+
         private void ActiveCommand(BotUser user, ICommunicator communicator)
         {
             _mediator.Send(new ChangePlayerStateRequest() {IsActive = true, UserId = user.Id}).Wait();
             var statusMessage = "Установлен статус - активен";
             communicator.SendMessage(statusMessage);
         }
-        
+
         private void InactiveCommand(BotUser user, ICommunicator communicator)
         {
             _mediator.Send(new ChangePlayerStateRequest() {IsActive = false, UserId = user.Id}).Wait();
             var statusMessage = "Установлен статус - неактивен";
             communicator.SendMessage(statusMessage);
         }
-        
+
         private void NextGameStatusCommand(BotUser user, ICommunicator communicator)
         {
             var statusMessage = _mediator.Send(new NextGameStatusRequest()).Result;
@@ -329,7 +344,7 @@ namespace BotService.Services
 
         private void RegisterCommand(BotUser user, ICommunicator communicator)
         {
-            var dialog = new RegisterTelegramDialog(new List<ICommunicator>(){communicator}, user.Id,
+            var dialog = new RegisterTelegramDialog(new List<ICommunicator>() {communicator}, user.Id,
                 new RegisterRequest(communicator), _logger, _mediator);
             CreateDialog(dialog, user);
         }

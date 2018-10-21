@@ -35,7 +35,7 @@ namespace BotService.Model.Dialogs
             _gameRepository               = gameRepository;
             _serviceConfiguration         = serviceConfiguration;
             _hasDesicion                  = false;
-
+удалить людей из реквестов
             using (threadContextSessionProvider.CreateSessionScope())
             {
                 var games = gameRepository.ListBySpecification(new UndeletedEntities<Game>()).ToList();
