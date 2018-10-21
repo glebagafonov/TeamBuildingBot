@@ -137,7 +137,7 @@ namespace Bot.Infrastructure.Repositories.Base
                 {
                     using (var scope = new TransactionScope(
                         TransactionScopeOption.Required,
-                        new TransactionOptions { Timeout = TimeSpan.FromMinutes(10), IsolationLevel = IsolationLevel.ReadUncommitted }))
+                        new TransactionOptions { Timeout = TimeSpan.FromMinutes(10)}))
                     {
                         foreach (var entity in x)
                             Session.SaveOrUpdate(entity);
@@ -164,7 +164,7 @@ namespace Bot.Infrastructure.Repositories.Base
                 {
                     using (var scope = new TransactionScope(
                         TransactionScopeOption.Required,
-                        new TransactionOptions { Timeout = TimeSpan.FromMinutes(10), IsolationLevel = IsolationLevel.ReadUncommitted }))
+                        new TransactionOptions { Timeout = TimeSpan.FromMinutes(10)}))
                     {
                         Session.Delete(x);
                         scope.Complete();
@@ -188,7 +188,7 @@ namespace Bot.Infrastructure.Repositories.Base
                 {
                     using (var scope = new TransactionScope(
                         TransactionScopeOption.Required,
-                        new TransactionOptions { Timeout = TimeSpan.FromMinutes(10), IsolationLevel = IsolationLevel.ReadUncommitted }))
+                        new TransactionOptions { Timeout = TimeSpan.FromMinutes(10)}))
                     {
                         foreach (var entity in x)
                             Session.Delete(entity);

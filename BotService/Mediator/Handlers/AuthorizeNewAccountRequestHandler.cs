@@ -49,13 +49,16 @@ namespace BotService.Mediator.Handlers
                 var currentUser = _botUserRepository.Get(request.CurrentUserId);
                 foreach (var currentUserUserAccount in currentUser.UserAccounts)
                 {
+                    currentUserUserAccount.User = user;
                     user.UserAccounts.Add(currentUserUserAccount);
                 }
 
                 _botUserRepository.Save(user);
+                currentUser.UserAccounts.Clear();
+                _botUserRepository.Save(currentUser);
                 _botUserRepository.Delete(currentUser);
-                return Task.FromResult(true);
             }
+                return Task.FromResult(true);
         }
     }
 }

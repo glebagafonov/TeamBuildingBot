@@ -89,7 +89,7 @@ namespace BotService.Model.Dialog
                     {
                         _logger.Warn(e);
                         foreach (var x in _communicators) x.SendMessage(e.Message);
-                        foreach (var x in _communicators) x.SendMessage("Повторите попытку или введите команду - /cancel");
+                        foreach (var x in _communicators) x.SendMessage("Повтори попытку или введите команду - /cancel");
                     }
                 }
                     break;

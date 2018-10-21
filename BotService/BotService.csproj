@@ -219,6 +219,7 @@
     <Compile Include="Model\ActionContext.cs" />
     <Compile Include="Model\Dialogs\BindUserToPlayerDialog.cs" />
     <Compile Include="Model\Dialogs\AddPlayerToGameRequestDialog.cs" />
+    <Compile Include="Model\Dialogs\AuthorizeNewAccountRequestDialog.cs" />
     <Compile Include="Model\Dialogs\SetGameResultRequestDialog.cs" />
     <Compile Include="Model\Dialogs\PlayerGameDefferedDecisionRequestDialog.cs" />
     <Compile Include="Model\Dialogs\CancelGameRequestDialog.cs" />

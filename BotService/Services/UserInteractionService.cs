@@ -127,12 +127,6 @@ namespace BotService.Services
                         HelpCommand(user, communicator);
                     }
                         break;
-                    case ECommandType.Authorize:
-                    {
-                        communicator.SendMessage(
-                            "Команда в разработке. Введи другую команду. Если нужна помошь воспользуйся командой - /help");
-                    }
-                        break;
                     case ECommandType.BindPlayer:
                     {
                         BindUserCommand(user, communicator);
@@ -186,6 +180,11 @@ namespace BotService.Services
                     case ECommandType.GameResult:
                     {
                         SetGameResultDialog(user, communicator);
+                    }
+                        break;
+                    case ECommandType.Authorize:
+                    {
+                        AuthorizeNewAccountCommand(user, communicator);
                     }
                         break;
                     default:
@@ -251,6 +250,13 @@ namespace BotService.Services
         {
             IDialog dialog = new PlayerGameDeferedDecisionRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
                 new PlayerGameDecisionRequest(), _logger, _mediator, _threadContextSessionProvider, _gameRepository, _serviceConfiguration, decision);
+            CreateDialog(dialog, user);
+        }
+        
+        private void AuthorizeNewAccountCommand(BotUser user, ICommunicator communicator)
+        {
+            IDialog dialog = new AuthorizeNewAccountRequestDialog(new List<ICommunicator>(){communicator}, user.Id,
+                new AuthorizeNewAccountRequest(), _logger, _mediator);
             CreateDialog(dialog, user);
         }
         
