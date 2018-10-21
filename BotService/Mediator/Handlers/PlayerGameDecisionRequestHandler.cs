@@ -16,14 +16,14 @@ namespace BotService.Mediator.Handlers
 {
     public class PlayerGameDecisionRequestHandler : IRequestHandler<PlayerGameDecisionRequest>
     {
-        private readonly IServiceConfiguration _serviceConfiguration;
+        private readonly IServiceConfiguration         _serviceConfiguration;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
-        private readonly IPlayerRepository _playerRepository;
-        private readonly IGameRepository _gameRepository;
-        private readonly IScheduler _scheduler;
-        private readonly IUserInteractionService _userInteractionService;
-        private readonly ICommunicatorFactory _communicatorFactory;
-        private readonly IMediator _mediator;
+        private readonly IPlayerRepository             _playerRepository;
+        private readonly IGameRepository               _gameRepository;
+        private readonly IScheduler                    _scheduler;
+        private readonly IUserInteractionService       _userInteractionService;
+        private readonly ICommunicatorFactory          _communicatorFactory;
+        private readonly IMediator                     _mediator;
 
 
         public PlayerGameDecisionRequestHandler(
@@ -36,14 +36,14 @@ namespace BotService.Mediator.Handlers
             ICommunicatorFactory communicatorFactory,
             IMediator mediator)
         {
-            _serviceConfiguration = serviceConfiguration;
+            _serviceConfiguration         = serviceConfiguration;
             _threadContextSessionProvider = threadContextSessionProvider;
-            _playerRepository = playerRepository;
-            _gameRepository = gameRepository;
-            _scheduler = scheduler;
-            _userInteractionService = userInteractionService;
-            _communicatorFactory = communicatorFactory;
-            _mediator = mediator;
+            _playerRepository             = playerRepository;
+            _gameRepository               = gameRepository;
+            _scheduler                    = scheduler;
+            _userInteractionService       = userInteractionService;
+            _communicatorFactory          = communicatorFactory;
+            _mediator                     = mediator;
         }
 
         public Task<Unit> Handle(PlayerGameDecisionRequest request, CancellationToken cancellationToken)
@@ -53,7 +53,7 @@ namespace BotService.Mediator.Handlers
                 var player = _playerRepository.Get(request.PlayerId);
                 var game   = _gameRepository.Get(request.GameId);
 
-                
+
                 if (request.Decision)
                 {
                     ProcessAccept(game, player);
@@ -62,8 +62,10 @@ namespace BotService.Mediator.Handlers
                 {
                     ProcessReject(game, player);
                 }
+
                 _gameRepository.Save(game);
             }
+
             return Task.FromResult(Unit.Value);
         }
 
@@ -84,37 +86,43 @@ namespace BotService.Mediator.Handlers
         {
             AddPlayerToDeclinedPlayersList(game, player);
             ProcessNewPlayer(game);
-            _scheduler.DeleteEvent<PlayerGameAcceptanceTimeoutEventMetadata>(x => x.GameId == game.Id && x.PlayerId == player.Id);
+            _scheduler.DeleteEvent<PlayerGameAcceptanceTimeoutEventMetadata>(x =>
+                x.GameId == game.Id && x.PlayerId == player.Id);
         }
-        
+
         private void ProcessNewPlayer(Game game)
         {
-            var nextPlayer = game.SortedPlayersByRating
+            var filteredPlayers = game.SortedPlayersByRating
                 .Where(x => game.RequestedPlayers.All(y => x.Player.Id != y.Player.Id))
-                .Where(x => game.AcceptedPlayers.All(y => x.Player.Id != y.Id))
-                .Where(x => game.RejectedPlayers.All(y => x.Player.Id != y.Id))
-                .OrderBy(x => x.OrderNumber)
-                .FirstOrDefault();
+                .Where(x => game.AcceptedPlayers.All(y => x.Player.Id  != y.Id))
+                .Where(x => game.RejectedPlayers.All(y => x.Player.Id  != y.Id));
+            
+            if (game.AcceptedPlayers.Concat(game.RequestedPlayers.Select(y => y.Player)).Count(y => y.IsGoalkeeper) >= 2)
+                filteredPlayers = filteredPlayers.Where(x => x.Player.IsGoalkeeper == false);
+            
+            var nextPlayer = filteredPlayers.OrderBy(x => x.OrderNumber).FirstOrDefault();
             if (nextPlayer != null)
             {
                 var timeoutTime = DateTime.Now.Add(_serviceConfiguration.InviteTime, _serviceConfiguration.StartDayTime,
                     _serviceConfiguration.EndDayTime);
                 var playerGameAcceptanceTimeoutEventMetadata = new PlayerGameAcceptanceTimeoutEventMetadata()
-                                                               {
-                                                                   GameId   = game.Id,
-                                                                   PlayerId = nextPlayer.Player.Id
-                                                               };
+                {
+                    GameId   = game.Id,
+                    PlayerId = nextPlayer.Player.Id
+                };
                 _scheduler.AddEvent(playerGameAcceptanceTimeoutEventMetadata, timeoutTime);
-                game.RequestedPlayers.Add(new PlayerEvent() { Id = Guid.NewGuid(), EventTime = timeoutTime, Player = nextPlayer.Player});
-                
-                _userInteractionService.StartGameConfirmationDialog(nextPlayer.Player, nextPlayer.Player.User.UserAccounts.Select(x => _communicatorFactory.GetCommunicator(x)).ToList(), game.Id);
+                game.RequestedPlayers.Add(new PlayerEvent()
+                    {Id = Guid.NewGuid(), EventTime = timeoutTime, Player = nextPlayer.Player});
 
+                _userInteractionService.StartGameConfirmationDialog(nextPlayer.Player,
+                    nextPlayer.Player.User.UserAccounts.Select(x => _communicatorFactory.GetCommunicator(x)).ToList(),
+                    game.Id);
             }
         }
 
         private static void AddPlayerToDeclinedPlayersList(Game game, Player player)
         {
-            game.AcceptedPlayers.RemoveAll(x => x.Id == player.Id);
+            game.AcceptedPlayers.RemoveAll(x => x.Id         == player.Id);
             game.RequestedPlayers.RemoveAll(x => x.Player.Id == player.Id);
             game.RejectedPlayers.Add(player);
         }
