@@ -100,7 +100,7 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
 
         private static int SortCondition(Player x)
         {
-            return x.SkillValue * x.ParticipationRatio;
+            return x.ParticipationRatio;
         }
     }
 }
