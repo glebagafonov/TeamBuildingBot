@@ -35,7 +35,6 @@ namespace BotService.Mediator.Handlers
         {
             using (_threadContextSessionProvider.CreateSessionScope())
             {
-                var users = _botUserRepository.ListBySpecification(new UndeletedEntities<BotUser>());
                 var user = GetUserByCommunicator(request.Communicator,
                     _botUserRepository.ListBySpecification(new UndeletedEntities<BotUser>()));
 

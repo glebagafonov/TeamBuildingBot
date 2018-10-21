@@ -7,6 +7,8 @@ namespace BotService.Mediator.Requests
     {
         public string FirstName { get; set; }
         public string LastName  { get; set; }
+        public string Login     { get; set; }
+        public string Password { get; set; }
 
         public ICommunicator Communicator { get; }
 
@@ -17,8 +19,7 @@ namespace BotService.Mediator.Requests
 
         public RegisterRequest()
         {
-            
         }
-        public string Password   { get; set; }
+
     }
 }

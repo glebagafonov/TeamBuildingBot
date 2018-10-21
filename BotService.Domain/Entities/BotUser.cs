@@ -10,6 +10,7 @@ namespace Bot.Domain.Entities
         public virtual string                   LastName     { get; set; }
         public virtual EUserRole                Role         { get; set; }
         public virtual ICollection<BaseAccount> UserAccounts { get; set; }
+        public virtual string                   Login        { get; set; }
         public virtual string                   PasswordHash { get; set; }
 
         public BotUser()

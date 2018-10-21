@@ -12,6 +12,7 @@ namespace Bot.Infrastructure.Mappings
             Table("`User`");
             this.PropertyString(x => x.FirstName);
             this.PropertyString(x => x.LastName);
+            this.PropertyString(x => x.Login);
             this.PropertyEnum(x => x.Role);
             
             Set(x => x.UserAccounts, c =>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using Bot.Infrastructure.Exceptions;
 using Bot.Infrastructure.Services.Interfaces;
 using BotService.Mediator.Requests;
@@ -13,6 +14,7 @@ namespace BotService.Model.Dialogs
 {
     public class RegisterTelegramDialog : Dialog<RegisterRequest>
     {
+        private static readonly Regex LoginValidator = new Regex(@"^\w+$");
         private string _captcha;
 
         private readonly IMediator _mediator;
@@ -63,13 +65,29 @@ namespace BotService.Model.Dialogs
                 registerRequestByTelegramAccount.LastName = message;
                 return registerRequestByTelegramAccount;
             });
-            Add("Введи уникальный пароль");
+            Add("Введи логин. Логин может состоять из англйских букв любого регистра, цифр, символа подчеркивания. Минимальная длина - 5 символов");
             Add((message, registerRequestByTelegramAccount) =>
             {
-                var task = _mediator.Send(new CheckUniquePassword(message));
-                task.Wait();
-                if(@task.Result)
-                    throw new InvalidInputException("Такой пароль уже существует! Придумай свой уникальный пароль.");
+                if (message.Length < 5 || !LoginValidator.IsMatch(message))
+                {
+                    throw new InvalidInputException("Логин уне удовлетворяет правилам");
+                }
+
+                if (_mediator.Send(new CheckUniqueLogin(message)).Result)
+                {
+                    throw new InvalidInputException("Такой логин уже существует! Придумай свой уникальный логин.");
+                }
+                registerRequestByTelegramAccount.Login = message;
+                return registerRequestByTelegramAccount;
+            });
+            Add("Введи пароль. Не менее 6 символов");
+            Add((message, registerRequestByTelegramAccount) =>
+            {
+                if (message.Length < 6)
+                {
+                    throw new InvalidInputException("Пароль уне удовлетворяет правилам");
+                }
+               
                 registerRequestByTelegramAccount.Password = message;
                 return registerRequestByTelegramAccount;
             });

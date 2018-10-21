@@ -7,7 +7,8 @@ namespace BotService.Mediator.Requests
 {
     public class AuthorizeNewAccountRequest : IRequest<bool>
     {
-        public Guid          CurrentUserId { get; set; }
-        public string        Password      { get; set; }
+        public Guid   CurrentUserId { get; set; }
+        public string Login         { get; set; }
+        public string Password      { get; set; }
     }
 }

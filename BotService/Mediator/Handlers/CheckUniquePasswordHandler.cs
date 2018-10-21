@@ -10,13 +10,13 @@ using MediatR;
 
 namespace BotService.Mediator.Handlers
 {
-    public class CheckUniquePasswordHandler : IRequestHandler<CheckUniquePassword, bool>
+    public class CheckUniqueLoginHandler : IRequestHandler<CheckUniqueLogin, bool>
     {
         private readonly ILogger                       _logger;
         private readonly IThreadContextSessionProvider _threadContextSessionProvider;
         private readonly IBotUserRepository            _botUserRepository;
 
-        public CheckUniquePasswordHandler(ILogger logger,
+        public CheckUniqueLoginHandler(ILogger logger,
             IThreadContextSessionProvider threadContextSessionProvider, IBotUserRepository botUserRepository)
         {
             _logger                       = logger;
@@ -24,12 +24,12 @@ namespace BotService.Mediator.Handlers
             _botUserRepository            = botUserRepository;
         }
 
-        public Task<bool> Handle(CheckUniquePassword request, CancellationToken cancellationToken)
+        public Task<bool> Handle(CheckUniqueLogin request, CancellationToken cancellationToken)
         {
             using (_threadContextSessionProvider.CreateSessionScope())
             {
                 return Task.FromResult(_botUserRepository.ListBySpecification(new UndeletedEntities<BotUser>())
-                    .Any(x => !string.IsNullOrEmpty(x.PasswordHash) && BCrypt.Net.BCrypt.Verify(request.Password, x.PasswordHash)));
+                    .Any(x => !string.IsNullOrEmpty(x.Login) && x.Login == request.Login));
             }
         }
     }

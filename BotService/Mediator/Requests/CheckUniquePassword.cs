@@ -2,12 +2,12 @@ using MediatR;
 
 namespace BotService.Mediator.Requests
 {
-    public class CheckUniquePassword : IRequest<bool>
+    public class CheckUniqueLogin : IRequest<bool>
     {
-        public CheckUniquePassword(string password)
+        public CheckUniqueLogin(string login)
         {
-            Password = password;
+            Login = login;
         }
-        public string Password  { get; set; }
+        public string Login  { get; set; }
     }
 }

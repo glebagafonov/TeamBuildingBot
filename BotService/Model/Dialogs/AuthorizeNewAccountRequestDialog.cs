@@ -18,22 +18,26 @@ namespace BotService.Model.Dialogs
         public AuthorizeNewAccountRequestDialog(IEnumerable<ICommunicator> communicators, Guid userId, AuthorizeNewAccountRequest dialogData,
             ILogger logger, IMediator mediator) : base(logger, communicators, userId, dialogData)
         {
-            
+            dialogData.CurrentUserId = userId;
             _mediator = mediator;
             
-            Add("Введи свой уникальный пароль");
-            Add((message, registerRequestByTelegramAccount) =>
+            Add("Введи логин");
+            Add((message, data) =>
             {
-                var result = _mediator.Send(new AuthorizeNewAccountRequest()
-                    {CurrentUserId = userId, Password = message}).Result;
-                if (!result)
-                {
-                    throw new InvalidInputException("Аккаунта с таким паролем не существует");
-                }
-
-                return registerRequestByTelegramAccount;
+                data.Login = message;
+                return data;
             });
-            Add("Авторизация прошла успешно");
+            Add("Введи уникальный пароль");
+            Add((message, data) =>
+            {
+                data.Password = message;
+                var result = _mediator.Send(data).Result;
+                Add(!result
+                    ? "Либо логин неверный, либо пароль... :(. Попробуй еще раз через - /auth"
+                    : "Авторизация прошла успешно");
+                return data;
+            });
+            
         }
 
         protected override string CommandName => "Авторизация";
