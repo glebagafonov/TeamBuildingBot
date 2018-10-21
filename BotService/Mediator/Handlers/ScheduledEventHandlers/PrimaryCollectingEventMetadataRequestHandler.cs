@@ -63,7 +63,7 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
                 var requestedPlayers = game.SortedPlayersByRating.Take(_serviceConfiguration.PlayersPerTeam * 2);
                 foreach (var requestedPlayer in requestedPlayers)
                 {
-                    game.RequestedPlayers.Add(RequestPlayer(requestedPlayer, game.Id, game.DateTime));
+                    game.RequestedPlayers.Add(RequestPlayer(requestedPlayer, game.Id));
                 }
                 _gameRepository.Save(game);
             }
@@ -71,7 +71,7 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
             return Task.FromResult(Unit.Value);
         }
 
-        private PlayerEvent RequestPlayer(SortedPlayer requestedPlayer, Guid gameId, DateTime gameDateTime)
+        private PlayerEvent RequestPlayer(SortedPlayer requestedPlayer, Guid gameId)
         {
             var timeoutTime = DateTime.Now.Add(_serviceConfiguration.FirstInviteTime, _serviceConfiguration.StartDayTime,
                 _serviceConfiguration.EndDayTime);
@@ -93,7 +93,8 @@ namespace BotService.Mediator.Handlers.ScheduledEventHandlers
             return _playerRepository
                 .ListBySpecification(new UndeletedEntities<Player>())
                 .Where(x => x.IsActive)
-                .OrderByDescending(SortCondition)
+                .OrderByDescending(x => x.ParticipationRatio)
+                .ThenByDescending(x => x.SkillValue)
                 .Select((x, index) => new SortedPlayer() {Id = Guid.NewGuid(), OrderNumber = index, Player = x})
                 .ToList();
         }

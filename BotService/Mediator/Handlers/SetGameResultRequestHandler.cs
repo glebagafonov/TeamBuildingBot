@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,21 +53,34 @@ namespace BotService.Mediator.Handlers
                     }
 
                     player.Player.ParticipationRatio++;
+                    if (player.Player.ParticipationRatio > 20)
+                    {
+                        player.Player.ParticipationRatio = 20;
+                    }
 
                     _playerRepository.Save(player.Player);
                 }
 
-                foreach (var notPlayedPlayer in notPlayedPlayers)
-                {
-                    notPlayedPlayer.ParticipationRatio--;
-                    _playerRepository.Save(notPlayedPlayer);
-                }
+                DecreaseParticipation(notPlayedPlayers);
                 
                 _gameRepository.Save(game);
                 
             }
 
             return Task.FromResult(Unit.Value);
+        }
+
+        private void DecreaseParticipation(List<Player> notPlayedPlayers)
+        {
+            foreach (var notPlayedPlayer in notPlayedPlayers)
+            {
+                notPlayedPlayer.ParticipationRatio--;
+                if (notPlayedPlayer.ParticipationRatio < 0)
+                {
+                    notPlayedPlayer.ParticipationRatio = 0;
+                }
+                _playerRepository.Save(notPlayedPlayer);
+            }
         }
     }
 }
